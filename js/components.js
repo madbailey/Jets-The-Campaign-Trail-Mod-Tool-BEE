@@ -1,13 +1,29 @@
 let app;
 
+const QUESTION = "QUESTION";
+const STATE = "STATE";
+const ISSUE = "ISSUE";
+const CANDIDATE = "CANDIDATE";
+
 async function loadData() {
+    let mode = QUESTION;
+    let raw;
+
     let f = await fetch(`./public/defaultcode2.js`, {mode: "no-cors"});
-    let raw = await f.text();
+    raw = await f.text();
+    
+
     Vue.prototype.$TCT = loadDataFromFile(raw);
     Vue.prototype.$globalData = Vue.observable({
+        mode: mode,
         question: Object.values(Vue.prototype.$TCT.questions)[0].pk,
+        state: null,
         filename: "default"
     });
+
+    console.log("Loaded data: ", data);
+    console.log("Mode is: ", Vue.prototype.$globalData.mode)
+
     app = new Vue({el: '#app', data: {}})
 }
 
@@ -74,14 +90,23 @@ Vue.component('editor', {
     template: `
     <div class="mx-auto bg-gray-100 p-4">
 
-        <question :pk="question"></question>
-
+        <question v-if="currentMode == 'QUESTION'" :pk="question"></question>
+        <state v-if="currentMode == 'STATE'" :pk="state"></state>
     </div>
     `,
 
     computed: {
+
+        currentMode: function() {
+            return Vue.prototype.$globalData.mode;
+        },
+
         question: function () {
             return Vue.prototype.$globalData.question;
+        },
+
+        state: function () {
+            return Vue.prototype.$globalData.state;
         },
     }
 })
@@ -106,6 +131,7 @@ Vue.component('question-picker', {
         },
 
         onChange:function(evt) {
+            Vue.prototype.$globalData.mode = QUESTION;
             Vue.prototype.$globalData.question = evt.target.value;
         }
     },
@@ -114,6 +140,35 @@ Vue.component('question-picker', {
         questions: function () {
           let a = [Vue.prototype.$globalData.filename];
           return Object.values(Vue.prototype.$TCT.questions);
+        }
+    }
+})
+
+Vue.component('state-picker', {
+
+    template: `
+    <div class="mx-auto bg-gray-100 p-4">
+
+    <label for="statePicker">States:</label>
+
+    <select @change="onChange($event)" name="statePicker" id="statePicker">
+        <option v-for="state in states" :value="state.pk" :key="state.pk">{{state.pk}} - {{state.fields.abbr}}</option>
+    </select>
+
+    </div>
+    `,
+
+    methods: {
+        onChange:function(evt) {
+            Vue.prototype.$globalData.mode = STATE;
+            Vue.prototype.$globalData.state = evt.target.value;
+        }
+    },
+
+    computed: {
+        states: function () {
+          let a = [Vue.prototype.$globalData.filename];
+          return Object.values(Vue.prototype.$TCT.states);
         }
     }
 })
@@ -521,5 +576,137 @@ Vue.component('state-score', {
         },
     }
 })
+
+Vue.component('state', {
+
+    props: ['pk'],
+
+    template: `
+    <div class="mx-auto bg-gray-100 p-4">
+
+    <h1 class="font-bold">{{stateName}} - STATE PK {{this.pk}}</h1><br>
+    <label for="electoral_votes">Electoral Votes:</label><br>
+    <input @input="onInput($event)" :value="electoralVotes" name="electoral_votes" type="text"><br>
+    <label for="popular_votes">Popular Votes:</label><br>
+    <input @input="onInput($event)" :value="popularVotes" name="popular_votes" type="text"><br>
+
+    <details open>
+    <summary>Candidate State Multipliers ({{this.candidateStateMultipliers.length}})</summary>
+    <ul>
+        <candidate-state-multiplier v-for="c in candidateStateMultipliers" :pk="c.pk" :key="c.pk"></candidate-state-multiplier>
+    </ul>
+    </details>
+
+    <details open>
+    <summary>State Issue Scores ({{this.stateIssueScores.length}})</summary>
+    <ul>
+        <state-issue-score v-for="c in stateIssueScores" :pk="c.pk" :key="c.pk"></state-issue-score>
+    </ul>
+    </details>
+
+    </div>
+    `,
+
+    methods: {
+        onInput: function(evt) {
+            Vue.prototype.$TCT.states[this.pk].fields[evt.target.name] = evt.target.value;
+        }
+    },
+
+    computed: {
+
+        stateName: function() {
+            return Vue.prototype.$TCT.states[this.pk].fields.name;
+        },
+
+        electoralVotes: function () {
+            return Vue.prototype.$TCT.states[this.pk].fields.electoral_votes;
+          },
+  
+        popularVotes: function () {
+            return Vue.prototype.$TCT.states[this.pk].fields.popular_votes;
+        },
+
+        candidateStateMultipliers: function () {
+            return Vue.prototype.$TCT.getCandidateStateMultipliersForState(this.pk);
+        },
+
+        stateIssueScores: function () {
+            return Vue.prototype.$TCT.getIssueScoreForState(this.pk);
+        }
+    }
+})
+
+Vue.component('candidate-state-multiplier', {
+
+    props: ['pk'],
+
+    template: `
+    <li class="mx-auto bg-gray-100 p-4">
+        <h1 class="font-bold">CANDIDATE STATE MULTIPLIER PK {{this.pk}}</h1><br>
+        
+        <label for="state_multiplier">Candidate PK {{candidate}} State Multiplier:</label><br>
+        <input @input="onInput($event)" :value="stateMultiplier" name="state_multiplier" type="text"><br>
+    </li>
+    `,
+
+    methods: {
+        onInput: function(evt) {
+            Vue.prototype.$TCT.candidate_state_multiplier[this.pk].fields[evt.target.name] = evt.target.value;
+        }
+    },
+
+    computed: {
+        stateMultiplier: function () {
+          return Vue.prototype.$TCT.candidate_state_multiplier[this.pk].fields.state_multiplier;
+        },
+
+        candidate : function () {
+            return Vue.prototype.$TCT.candidate_state_multiplier[this.pk].fields.candidate;
+        }
+    }
+})
+
+Vue.component('state-issue-score', {
+
+    props: ['pk'],
+
+    template: `
+    <li class="mx-auto bg-gray-100 p-4">
+        <h1 class="font-bold">STATE ISSUE SCORE PK {{this.pk}}</h1><br>
+        
+        <label for="issue">Issue PK</label><br>
+        <input @input="onInput($event)" :value="issue" name="issue" type="text"><br>
+    
+        <label for="state_issue_score">State Issue Score</label><br>
+        <input @input="onInput($event)" :value="stateIssueScore" name="state_issue_score" type="text"><br>
+    
+        <label for="weight">Issue Weight</label><br>
+        <input @input="onInput($event)" :value="weight" name="weight" type="text"><br>
+    
+    </li>
+    `,
+
+    methods: {
+        onInput: function(evt) {
+            Vue.prototype.$TCT.state_issue_scores[this.pk].fields[evt.target.name] = evt.target.value;
+        }
+    },
+
+    computed: {
+        issue: function () {
+            return Vue.prototype.$TCT.state_issue_scores[this.pk].fields.issue;
+        },
+
+        stateIssueScore : function () {
+            return Vue.prototype.$TCT.state_issue_scores[this.pk].fields.state_issue_score;
+        },
+
+        weight : function () {
+            return Vue.prototype.$TCT.state_issue_scores[this.pk].fields.weight;
+        }
+    }
+})
+
 
 loadData();

@@ -291,7 +291,5 @@ function loadDataFromFile(raw_json) {
 
     data = new TCTData(questions, answers, issues, state_issue_scores, candidate_issue_scores, running_mate_issue_scores, candidate_state_multipliers, answer_score_globals, answer_score_issues, answer_score_states, feedbacks, states, highest_pk)
 
-    console.log(data)
-
     return data
 }
