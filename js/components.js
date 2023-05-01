@@ -1,7 +1,7 @@
 let app;
 
 async function loadData() {
-    let f = await fetch(`../public/defaultcode2.js`, {mode: "no-cors"});
+    let f = await fetch(`./public/defaultcode2.js`, {mode: "no-cors"});
     let raw = await f.text();
     Vue.prototype.$TCT = loadDataFromFile(raw);
     Vue.prototype.$globalData = Vue.observable({
