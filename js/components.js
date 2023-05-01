@@ -133,7 +133,7 @@ Vue.component('question-picker', {
     template: `
     <div class="mx-auto bg-gray-100 p-4">
 
-    <label for="questionPicker">Questions:</label>
+    <label for="questionPicker">Questions:</label><br>
 
     <select @click="onClick" @change="onChange($event)" name="questionPicker" id="questionPicker">
         <option v-for="question in questions" :value="question.pk" :key="question.pk">{{question.pk}} - {{questionDescription(question)}}</option>
@@ -172,7 +172,7 @@ Vue.component('state-picker', {
     template: `
     <div class="mx-auto bg-gray-100 p-4">
 
-    <label for="statePicker">States:</label>
+    <label for="statePicker">States:</label><br>
 
     <select @click="onClick" @change="onChange($event)" name="statePicker" id="statePicker">
         <option v-for="state in states" :value="state.pk" :key="state.pk">{{state.pk}} - {{state.fields.abbr}}</option>
@@ -207,7 +207,7 @@ Vue.component('issue-picker', {
     template: `
     <div class="mx-auto bg-gray-100 p-4">
 
-    <label for="issuePicker">Issues:</label>
+    <label for="issuePicker">Issues:</label><br>
 
     <select @click="onClick" @change="onChange($event)" name="issuePicker" id="issuePicker">
         <option v-for="issue in issues" :value="issue.pk" :key="issue.pk">{{issue.pk}} - {{issue.fields.name}}</option>
