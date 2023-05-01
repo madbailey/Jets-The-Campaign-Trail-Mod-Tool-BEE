@@ -17,7 +17,9 @@ async function loadData() {
     Vue.prototype.$globalData = Vue.observable({
         mode: mode,
         question: Object.values(Vue.prototype.$TCT.questions)[0].pk,
-        state: null,
+        state: Object.values(Vue.prototype.$TCT.states)[0].pk,
+        issue: Object.values(Vue.prototype.$TCT.issues)[0].pk,
+        candidate: getListOfCandidates()[0],
         filename: "default"
     });
 
@@ -25,6 +27,11 @@ async function loadData() {
     console.log("Mode is: ", Vue.prototype.$globalData.mode)
 
     app = new Vue({el: '#app', data: {}})
+}
+
+function getListOfCandidates() {
+    let arr = Object.values(Vue.prototype.$TCT.candidate_issue_score).map(c => c.fields.candidate);
+    return Array.from(new Set(arr));
 }
 
 Vue.component('toolbar', {
@@ -92,6 +99,8 @@ Vue.component('editor', {
 
         <question v-if="currentMode == 'QUESTION'" :pk="question"></question>
         <state v-if="currentMode == 'STATE'" :pk="state"></state>
+        <issue v-if="currentMode == 'ISSUE'" :pk="issue"></issue>
+        <candidate v-if="currentMode == 'CANDIDATE'" :pk="candidate"></candidate>
     </div>
     `,
 
@@ -108,6 +117,14 @@ Vue.component('editor', {
         state: function () {
             return Vue.prototype.$globalData.state;
         },
+
+        issue: function () {
+            return Vue.prototype.$globalData.issue;
+        },
+
+        candidate: function () {
+            return Vue.prototype.$globalData.candidate;
+        },
     }
 })
 
@@ -118,7 +135,7 @@ Vue.component('question-picker', {
 
     <label for="questionPicker">Questions:</label>
 
-    <select @change="onChange($event)" name="questionPicker" id="questionPicker">
+    <select @click="onClick" @change="onChange($event)" name="questionPicker" id="questionPicker">
         <option v-for="question in questions" :value="question.pk" :key="question.pk">{{question.pk}} - {{questionDescription(question)}}</option>
     </select>
 
@@ -133,6 +150,12 @@ Vue.component('question-picker', {
         onChange:function(evt) {
             Vue.prototype.$globalData.mode = QUESTION;
             Vue.prototype.$globalData.question = evt.target.value;
+        },
+
+        onClick:function(evt) {
+            if(Vue.prototype.$globalData.mode != QUESTION) {
+                Vue.prototype.$globalData.mode = QUESTION;
+            }
         }
     },
 
@@ -151,7 +174,7 @@ Vue.component('state-picker', {
 
     <label for="statePicker">States:</label>
 
-    <select @change="onChange($event)" name="statePicker" id="statePicker">
+    <select @click="onClick" @change="onChange($event)" name="statePicker" id="statePicker">
         <option v-for="state in states" :value="state.pk" :key="state.pk">{{state.pk}} - {{state.fields.abbr}}</option>
     </select>
 
@@ -162,6 +185,12 @@ Vue.component('state-picker', {
         onChange:function(evt) {
             Vue.prototype.$globalData.mode = STATE;
             Vue.prototype.$globalData.state = evt.target.value;
+        },
+
+        onClick:function(evt) {
+            if(Vue.prototype.$globalData.mode != STATE) {
+                Vue.prototype.$globalData.mode = STATE;
+            }
         }
     },
 
@@ -169,6 +198,76 @@ Vue.component('state-picker', {
         states: function () {
           let a = [Vue.prototype.$globalData.filename];
           return Object.values(Vue.prototype.$TCT.states);
+        }
+    }
+})
+
+Vue.component('issue-picker', {
+
+    template: `
+    <div class="mx-auto bg-gray-100 p-4">
+
+    <label for="issuePicker">Issues:</label>
+
+    <select @click="onClick" @change="onChange($event)" name="issuePicker" id="issuePicker">
+        <option v-for="issue in issues" :value="issue.pk" :key="issue.pk">{{issue.pk}} - {{issue.fields.name}}</option>
+    </select>
+
+    </div>
+    `,
+
+    methods: {
+        onChange:function(evt) {
+            Vue.prototype.$globalData.mode = ISSUE;
+            Vue.prototype.$globalData.issue = evt.target.value;
+        },
+
+        onClick:function(evt) {
+            if(Vue.prototype.$globalData.mode != ISSUE) {
+                Vue.prototype.$globalData.mode = ISSUE;
+            }
+        }
+    },
+
+    computed: {
+        issues: function () {
+          let a = [Vue.prototype.$globalData.filename];
+          return Object.values(Vue.prototype.$TCT.issues);
+        }
+    }
+})
+
+Vue.component('candidate-picker', {
+
+    template: `
+    <div class="mx-auto bg-gray-100 p-4">
+
+    <label for="candidatePicker">Candidates:</label><br>
+
+    <select @click="onClick" @change="onChange($event)" name="candidatePicker" id="candidatePicker">
+        <option v-for="c in candidates" :value="c" :key="c">{{c}}</option>
+    </select>
+
+    </div>
+    `,
+
+    methods: {
+        onChange:function(evt) {
+            Vue.prototype.$globalData.mode = CANDIDATE;
+            Vue.prototype.$globalData.candidate = evt.target.value;
+        },
+
+        onClick:function(evt) {
+            if(Vue.prototype.$globalData.mode != CANDIDATE) {
+                Vue.prototype.$globalData.mode = CANDIDATE;
+            }
+        }
+    },
+
+    computed: {
+        candidates: function () {
+          let a = [Vue.prototype.$globalData.filename];
+          return getListOfCandidates();
         }
     }
 })
@@ -192,7 +291,7 @@ Vue.component('question', {
         <label for="likelihood">Likelihood:</label><br>
         <input @input="onInput($event)" :value="likelihood" name="likelihood" type="text"><br>
         <label for="description">Description:</label><br>
-        <textarea @input="onInput($event)" :value="description" name="description" rows="4" cols="50"></textarea>
+        <textarea @input="onInputUpdatePicker($event)" :value="description" name="description" rows="4" cols="50"></textarea>
 
         <details open>
         <summary>Answers ({{this.answers.length}})</summary>
@@ -230,6 +329,12 @@ Vue.component('question', {
             Vue.prototype.$TCT.questions[this.pk].fields[evt.target.name] = evt.target.value;
         },
 
+        onInputUpdatePicker: function(evt) {
+            Vue.prototype.$TCT.questions[this.pk].fields[evt.target.name] = evt.target.value;
+            const temp = Vue.prototype.$globalData.filename;
+            Vue.prototype.$globalData.filename = "";
+            Vue.prototype.$globalData.filename = temp;
+        },
 
     },
 
@@ -645,7 +750,7 @@ Vue.component('candidate-state-multiplier', {
     <li class="mx-auto bg-gray-100 p-4">
         <h1 class="font-bold">CANDIDATE STATE MULTIPLIER PK {{this.pk}}</h1><br>
         
-        <label for="state_multiplier">Candidate PK {{candidate}} State Multiplier:</label><br>
+        <label for="state_multiplier">Candidate PK {{candidate}} {{stateName}} State Multiplier:</label><br>
         <input @input="onInput($event)" :value="stateMultiplier" name="state_multiplier" type="text"><br>
     </li>
     `,
@@ -663,6 +768,11 @@ Vue.component('candidate-state-multiplier', {
 
         candidate : function () {
             return Vue.prototype.$TCT.candidate_state_multiplier[this.pk].fields.candidate;
+        },
+
+        stateName : function () {
+            const statePk = Vue.prototype.$TCT.candidate_state_multiplier[this.pk].fields.state;
+            return Object.values(Vue.prototype.$TCT.states).filter(x => x.pk == statePk)[0].fields.name;
         }
     }
 })
@@ -707,6 +817,190 @@ Vue.component('state-issue-score', {
         }
     }
 })
+
+Vue.component('issue', {
+
+    props: ['pk'],
+
+    template: `
+    <div class="mx-auto bg-gray-100 p-4">
+
+        <h1 class="font-bold">ISSUE PK {{this.pk}}</h1><br>
+
+        <label for="name">Issue Name</label><br>
+        <input @input="onInputUpdatePicker($event)" :value="name" name="name" type="text"><br><br>
+
+        <h1>Stances</h1><br>
+        <stance v-for="n in 7" :key="n" :pk="pk" :n="n"></stance>
+
+        <details open>
+        <summary>Candidate Issue Scores ({{this.candidateIssueScores.length}})</summary>
+        <ul>
+            <candidate-issue-score isRunning="false" v-for="c in candidateIssueScores" :pk="c.pk" :key="c.pk"></candidate-issue-score>
+        </ul>
+        </details>
+
+        <details open>
+        <summary>Running Mate Issue Scores ({{this.runningMateIssueScores.length}})</summary>
+        <ul>
+            <candidate-issue-score isRunning="true" v-for="c in runningMateIssueScores" :pk="c.pk" :key="c.pk"></candidate-issue-score>
+        </ul>
+        </details>
+
+    </div>
+    `,
+
+    methods: {
+
+        onInput: function(evt) {
+            Vue.prototype.$TCT.issues[this.pk].fields[evt.target.name] = evt.target.value;
+        },
+
+        onInputUpdatePicker: function(evt) {
+            Vue.prototype.$TCT.issues[this.pk].fields[evt.target.name] = evt.target.value;
+            const temp = Vue.prototype.$globalData.filename;
+            Vue.prototype.$globalData.filename = "";
+            Vue.prototype.$globalData.filename = temp;
+        },
+
+    },
+
+    computed: {
+        name: function () {
+            return Vue.prototype.$TCT.issues[this.pk].fields.name;
+        },
+
+        candidateIssueScores: function() {
+            return Vue.prototype.$TCT.getCandidateIssueScoreForIssue(this.pk);
+        },
+
+        runningMateIssueScores: function() {
+            return Vue.prototype.$TCT.getRunningMateIssueScoreForIssue(this.pk);
+            
+        },
+    }
+})
+
+Vue.component('stance', {
+
+    props: ['pk', 'n'],
+
+    template: `
+    <div class="mx-auto bg-gray-100 p-4">
+
+        <label>Stance {{n}}</label><br>
+        <input @input="onInput($event)" :value="stance" name="stance" type="text"></input><br>
+    </div>
+    `,
+
+    methods: {
+
+        onInput: function(evt) {
+            Vue.prototype.$TCT.issues[this.pk].fields["stance_" + this.n] = evt.target.value;
+        },
+
+    },
+
+    computed: {
+        stance: function () {
+          return Vue.prototype.$TCT.issues[this.pk].fields["stance_" + this.n];
+        },
+    }
+})
+
+Vue.component('candidate-issue-score', {
+
+    props: ['pk', 'isRunning'],
+
+    template: `
+    <div class="mx-auto bg-gray-100 p-4">
+
+        <label>Candidate PK</label><br>
+        <input @input="onInput($event)" :value="candidate" name="candidate" type="text"></input><br>
+    
+        <label>Issue Score</label><br>
+        <input @input="onInput($event)" :value="issueScore" name="issue_score" type="text"></input><br>
+    
+    </div>
+    `,
+
+    methods: {
+
+        onInput: function(evt) {
+            if(this.isRunning != "true")
+            {
+                Vue.prototype.$TCT.candidate_issue_score[this.pk].fields[evt.target.name] = evt.target.value;
+            }
+            else
+            {
+                Vue.prototype.$TCT.running_mate_issue_score[this.pk].fields[evt.target.name] = evt.target.value;
+            }
+        },
+
+    },
+
+    computed: {
+        candidate: function () {
+            if(this.isRunning != "true")
+            {
+                return Vue.prototype.$TCT.candidate_issue_score[this.pk].fields["candidate"];
+            }
+            else
+            {
+                return Vue.prototype.$TCT.running_mate_issue_score[this.pk].fields["candidate"];
+            }
+          
+        },
+
+        issueScore: function () {
+            if(this.isRunning != "true")
+            {
+                return Vue.prototype.$TCT.candidate_issue_score[this.pk].fields["issue_score"];
+            }
+            else
+            {
+                return Vue.prototype.$TCT.running_mate_issue_score[this.pk].fields["issue_score"];
+            }
+          
+        },
+    }
+})
+
+Vue.component('candidate', {
+
+    props: ['pk'],
+
+    template: `
+    <div class="mx-auto bg-gray-100 p-4">
+
+        <h1>Candidate PK {{this.pk}}</h1><br>
+
+        <details open>
+        <summary>Candidate State Multipliers ({{this.stateMultipliersForCandidate.length}})</summary>
+        <ul>
+            <candidate-state-multiplier v-for="c in stateMultipliersForCandidate" :pk="c.pk" :key="c.pk"></candidate-state-multiplier>
+        </ul>
+        </details>
+
+    </div>
+    `,
+
+    methods: {
+
+        onInput: function(evt, pk) {
+            Vue.prototype.$TCT.candidate_state_multiplier[pk].fields[evt.target.name] = evt.target.value;
+        },
+
+    },
+
+    computed: {
+
+        stateMultipliersForCandidate: function () {
+            return Vue.prototype.$TCT.getStateMultiplierForCandidate(this.pk);
+        },
+    }
+})
+
 
 
 loadData();
