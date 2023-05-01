@@ -68,6 +68,70 @@ class TCTData {
     getCandidateStateMultipliersForState(pk) {
         return Object.values(this.candidate_state_multiplier).filter(x => x.fields.state == pk);
     }
+
+    exportCode2() {
+        let f = "";
+        f += ("campaignTrail_temp.questions_json = ")
+        let x = JSON.stringify(Object.values(this.questions), null, 4).replaceAll("â€™", "\'")
+        f += (x)
+        f += ("\n\n")
+
+        f += ("campaignTrail_temp.answers_json = ")
+        x = JSON.stringify(Object.values(this.answers), null, 4).replaceAll("â€™", "\'")
+        f += (x)
+        f += ("\n\n")
+
+        f += ("campaignTrail_temp.states_json = ")
+        x = JSON.stringify(Object.values(this.states), null, 4)
+        f += (x)
+        f += ("\n\n")
+
+        f += ("campaignTrail_temp.issues_json = ")
+        x = JSON.stringify(Object.values(this.issues), null, 4).replaceAll("â€™", "\'")
+        f += (x)
+        f += ("\n\n")
+
+        f += ("campaignTrail_temp.state_issue_score_json = ")
+        x = JSON.stringify(Object.values(this.state_issue_scores), null, 4)
+        f += (x)
+        f += ("\n\n")
+
+        f += ("campaignTrail_temp.candidate_issue_score_json = ")
+        x = JSON.stringify(Object.values(this.candidate_issue_score), null, 4)
+        f += (x)
+        f += ("\n\n")
+
+        f += ("campaignTrail_temp.running_mate_issue_score_json = ")
+        x = JSON.stringify(Object.values(this.running_mate_issue_score), null, 4)
+        f += (x)
+        f += ("\n\n")
+
+        f += ("campaignTrail_temp.candidate_state_multiplier_json = ")
+        x = JSON.stringify(Object.values(this.candidate_state_multiplier), null, 4)
+        f += (x)
+        f += ("\n\n")
+
+        f += ("campaignTrail_temp.answer_score_global_json = ")
+        x = JSON.stringify(Object.values(this.answer_score_global), null, 4)
+        f += (x)
+        f += ("\n\n")
+
+        f += ("campaignTrail_temp.answer_score_issue_json = ")
+        x = JSON.stringify(Object.values(this.answer_score_issue), null, 4)
+        f += (x)
+        f += ("\n\n")
+
+        f += ("campaignTrail_temp.answer_score_state_json = ")
+        x = JSON.stringify(Object.values(this.answer_score_state), null, 4)
+        f += (x)
+        f += ("\n\n")
+
+        f += ("campaignTrail_temp.answer_feedback_json = ")
+        x = JSON.stringify(Object.values(this.answer_feedback), null, 4)
+        f += (x)
+        f += ("\n\n")
+        return f
+    }
 }
 
 function extractJSON(raw_file, start, end, backup = null, backupEnd = null) {

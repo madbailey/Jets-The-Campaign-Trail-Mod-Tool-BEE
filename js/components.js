@@ -5,10 +5,70 @@ async function loadData() {
     let raw = await f.text();
     Vue.prototype.$TCT = loadDataFromFile(raw);
     Vue.prototype.$globalData = Vue.observable({
-        question: '343' 
-      });
+        question: Object.values(Vue.prototype.$TCT.questions)[0].pk,
+        filename: "default"
+    });
     app = new Vue({el: '#app', data: {}})
 }
+
+Vue.component('toolbar', {
+    template: `
+    <div class="flex mx-auto bg-gray-100 p-4">
+    <input type="file" id="file" style="display:none;" @change="fileUploaded($event)"></input>
+    <button class="bg-gray-300 p-2 m-2 rounded hover:bg-gray-500" v-on:click="importCode2()">Import Code 2</button>
+    <button class="bg-gray-300 p-2 m-2 rounded hover:bg-gray-500" v-on:click="exportCode2()">Export Code 2</button>
+    <br>
+
+    </div>
+    `,
+
+    methods: {
+
+        fileUploaded: function(evt) {
+            const file = evt.target.files[0];
+            
+            if (file) {
+                var reader = new FileReader();
+                reader.readAsText(file, "UTF-8");
+                reader.onload = function (evt) {
+                    try {
+                        Vue.prototype.$TCT = loadDataFromFile(evt.target.result);
+                        Vue.prototype.$globalData.question = Object.values(Vue.prototype.$TCT.questions)[0].pk;
+                        Vue.prototype.$globalData.filename = file.name;
+                    } catch(e) {
+                        alert("Error parsing uploaded file: " + e)
+                    }
+                    
+                }
+                reader.onerror = function (evt) {
+                    alert("Error reading uploaded file!")
+                }
+            }
+            
+            
+        },
+
+        importCode2: function() {
+            const input = document.getElementById("file");
+            input.click();
+        },
+
+        exportCode2: function() {
+            const f = Vue.prototype.$TCT.exportCode2();
+
+            let element = document.createElement('a');
+            element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(f));
+            element.setAttribute('download', Vue.prototype.$globalData.filename);
+
+            element.style.display = 'none';
+            document.body.appendChild(element);
+
+            element.click();
+
+            document.body.removeChild(element);
+        }
+    }
+})
 
 Vue.component('editor', {
     template: `
@@ -21,7 +81,7 @@ Vue.component('editor', {
 
     computed: {
         question: function () {
-          return Vue.prototype.$globalData.question;
+            return Vue.prototype.$globalData.question;
         },
     }
 })
@@ -52,6 +112,7 @@ Vue.component('question-picker', {
 
     computed: {
         questions: function () {
+          let a = [Vue.prototype.$globalData.filename];
           return Object.values(Vue.prototype.$TCT.questions);
         }
     }
@@ -63,7 +124,7 @@ Vue.component('question', {
 
     data() {
         return {
-          answers:Vue.prototype.$TCT.getAnswersForQuestion(this.pk),
+            temp_answers: []
         };
     },
 
@@ -79,10 +140,10 @@ Vue.component('question', {
         <textarea @input="onInput($event)" :value="description" name="description" rows="4" cols="50"></textarea>
 
         <details open>
-        <summary>Answers</summary>
+        <summary>Answers ({{this.answers.length}})</summary>
         <button class="bg-green-500 text-white p-2 my-2 rounded hover:bg-green-600" v-on:click="addAnswer()">Add Answer</button>
         <ul>
-            <answer v-for="answer in answers" :pk="answer.pk" :key="answer.pk"></answer>
+            <answer @deleteAnswer="deleteAnswer" v-for="answer in answers" :pk="answer.pk" :key="answer.pk"></answer>
         </ul>
         </details>
 
@@ -101,16 +162,28 @@ Vue.component('question', {
                     "description": "[put description here]"
                 }
             }
-            this.answers.push(answer)
+            this.temp_answers = [];
             Vue.prototype.$TCT.answers[newPk] = answer;
+        },
+
+        deleteAnswer: function(pk) {
+            this.temp_answers = []
+            delete Vue.prototype.$TCT.answers[pk];
         },
 
         onInput: function(evt) {
             Vue.prototype.$TCT.questions[this.pk].fields[evt.target.name] = evt.target.value;
-        }
+        },
+
+
     },
 
     computed: {
+
+        answers: function() {
+            return this.temp_answers.concat(Vue.prototype.$TCT.getAnswersForQuestion(this.pk));
+        },
+        
         description: function () {
           return Vue.prototype.$TCT.questions[this.pk].fields.description;
         },
@@ -150,34 +223,34 @@ Vue.component('answer', {
         <button class="bg-red-500 text-white p-2 my-2 rounded hover:bg-red-600" v-on:click="deleteAnswer()">Delete Answer</button>
 
         <details>
-        <summary>Answer Feedback</summary>
+        <summary>Answer Feedback ({{this.feedbacks.length}})</summary>
         <button class="bg-green-500 text-white p-2 my-2 rounded hover:bg-green-600" v-on:click="addFeedback()">Add Feedback</button>
         <ul>
-            <answer-feedback v-for="feedback in feedbacks" :pk="feedback.pk" :key="feedback.pk"></answer-feedback>
+            <answer-feedback @deleteFeedback="deleteFeedback" v-for="feedback in feedbacks" :pk="feedback.pk" :key="feedback.pk"></answer-feedback>
         </ul>
         </details>
 
         <details>
-        <summary>Global Scores</summary>
+        <summary>Global Scores ({{this.globalScores.length}})</summary>
         <button class="bg-green-500 text-white p-2 my-2 rounded hover:bg-green-600" v-on:click="addGlobalScore()">Add Global Scores</button>
         <ul>
-            <global-score v-for="x in globalScores" :pk="x.pk" :key="x.pk"></global-score>
+            <global-score @deleteGlobalScore="deleteGlobalScore" v-for="x in globalScores" :pk="x.pk" :key="x.pk"></global-score>
         </ul>
         </details>
 
         <details>
-        <summary>Issue Scores</summary>
+        <summary>Issue Scores ({{this.issueScores.length}})</summary>
         <button class="bg-green-500 text-white p-2 my-2 rounded hover:bg-green-600" v-on:click="addIssueScore()">Add Issue Score</button>
         <ul>
-            <issue-score v-for="x in issueScores" :pk="x.pk" :key="x.pk"></issue-score>
+            <issue-score @deleteIssueScore="deleteIssueScore" v-for="x in issueScores" :pk="x.pk" :key="x.pk"></issue-score>
         </ul>
         </details>
 
         <details>
-        <summary>State Scores</summary>
+        <summary>State Scores ({{this.stateScores.length}})</summary>
         <button class="bg-green-500 text-white p-2 my-2 rounded hover:bg-green-600" v-on:click="addStateScore()">Add State Score</button>
         <ul>
-            <state-score v-for="x in stateScores" :pk="x.pk" :key="x.pk"></state-score>
+            <state-score @deleteStateScore="deleteStateScore" v-for="x in stateScores" :pk="x.pk" :key="x.pk"></state-score>
         </ul>
         </details>
 
@@ -251,7 +324,28 @@ Vue.component('answer', {
         },
 
         deleteAnswer: function() {
+            this.$emit('deleteAnswer', this.pk)
+        },
 
+        deleteFeedback: function(pk) {
+            console.log("delete feedback", pk)
+            this.feedbacks = this.feedbacks.filter(a => a.pk != pk);
+            delete Vue.prototype.$TCT.answer_feedback[pk];
+        },
+
+        deleteGlobalScore: function(pk) {
+            this.globalScores = this.globalScores.filter(a => a.pk != pk);
+            delete Vue.prototype.$TCT.answer_score_global[pk];
+        },
+
+        deleteIssueScore: function(pk) {
+            this.issueScores = this.issueScores.filter(a => a.pk != pk);
+            delete Vue.prototype.$TCT.answer_score_issue[pk];
+        },
+
+        deleteStateScore: function(pk) {
+            this.stateScores = this.stateScores.filter(a => a.pk != pk);
+            delete Vue.prototype.$TCT.answer_score_state[pk];
         },
 
         onInput: function(evt) {
@@ -279,7 +373,9 @@ Vue.component('answer-feedback', {
         <input @input="onInput($event)" :value="candidate" name="candidate" type="text"><br>
 
         <label for="answer_feedback">Answer Feedback:</label><br>
-        <textarea @input="onInput($event)" :value="answerFeedback" name="answer_feedback" rows="4" cols="50"></textarea>
+        <textarea @input="onInput($event)" :value="answerFeedback" name="answer_feedback" rows="4" cols="50"></textarea><br>
+
+        <button class="bg-red-500 text-white p-2 my-2 rounded hover:bg-red-600" v-on:click="$emit('deleteFeedback', pk)">Delete Feedback</button>
     </li>
     `,
 
@@ -316,7 +412,9 @@ Vue.component('global-score', {
 
         <label for="global_multiplier">Global Multiplier:</label><br>
         <input @input="onInput($event)" :value="multiplier" name="global_multiplier" type="text"><br>
-    </li>
+
+        <button class="bg-red-500 text-white p-2 my-2 rounded hover:bg-red-600" v-on:click="$emit('deleteGlobalScore', pk)">Delete Global Score</button>
+        </li>
     `,
 
     methods: {
@@ -356,6 +454,8 @@ Vue.component('issue-score', {
 
         <label for="issue_importance">Issue Importance:</label><br>
         <input @input="onInput($event)" :value="issueImportance" name="issue_importance" type="text"><br>
+   
+        <button class="bg-red-500 text-white p-2 my-2 rounded hover:bg-red-600" v-on:click="$emit('deleteIssueScore', pk)">Delete Issue Score</button>
     </li>
     `,
 
@@ -396,6 +496,8 @@ Vue.component('state-score', {
 
         <label for="state_multiplier">State Multiplier:</label><br>
         <input @input="onInput($event)" :value="multiplier" name="state_multiplier" type="text"><br>
+
+        <button class="bg-red-500 text-white p-2 my-2 rounded hover:bg-red-600" v-on:click="$emit('deleteStateScore', pk)">Delete State Score</button>
     </li>
     `,
 
