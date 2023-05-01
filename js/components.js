@@ -36,12 +36,11 @@ function getListOfCandidates() {
 
 Vue.component('toolbar', {
     template: `
-    <div class="flex mx-auto bg-gray-100 p-4">
+    <div class="flex mx-auto p-4">
     <input type="file" id="file" style="display:none;" @change="fileUploaded($event)"></input>
     <button class="bg-gray-300 p-2 m-2 rounded hover:bg-gray-500" v-on:click="importCode2()">Import Code 2</button>
     <button class="bg-gray-300 p-2 m-2 rounded hover:bg-gray-500" v-on:click="exportCode2()">Export Code 2</button>
     <br>
-
     </div>
     `,
 
@@ -134,7 +133,7 @@ Vue.component('editor', {
 Vue.component('question-picker', {
 
     template: `
-    <div class="mx-auto bg-gray-100 p-4">
+    <div class="mx-auto p-6">
 
     <label for="questionPicker">Questions:</label><br>
 
@@ -173,7 +172,7 @@ Vue.component('question-picker', {
 Vue.component('state-picker', {
 
     template: `
-    <div class="mx-auto bg-gray-100 p-4">
+    <div class="mx-auto p-6">
 
     <label for="statePicker">States:</label><br>
 
@@ -208,7 +207,7 @@ Vue.component('state-picker', {
 Vue.component('issue-picker', {
 
     template: `
-    <div class="mx-auto bg-gray-100 p-4">
+    <div class="mx-auto p-6">
 
     <label for="issuePicker">Issues:</label><br>
 
@@ -243,7 +242,7 @@ Vue.component('issue-picker', {
 Vue.component('candidate-picker', {
 
     template: `
-    <div class="mx-auto bg-gray-100 p-4">
+    <div class="mx-auto p-6">
 
     <label for="candidatePicker">Candidates:</label><br>
 
@@ -286,7 +285,7 @@ Vue.component('question', {
     },
 
     template: `
-    <div class="mx-auto bg-gray-100 p-4">
+    <div class="mx-auto p-4">
 
         <h1 class="font-bold">QUESTION PK {{this.pk}}</h1><br>
         <label for="priority">Priority:</label><br>
