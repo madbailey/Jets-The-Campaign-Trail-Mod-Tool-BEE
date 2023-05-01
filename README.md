@@ -27,6 +27,3 @@ If you have any issues report them on the GitHub in the issues tab.
 Happy mod making,
 
 Jet
-
-![Screenshot of the app](screenshot.png)
-
