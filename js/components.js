@@ -57,6 +57,9 @@ Vue.component('toolbar', {
                     try {
                         Vue.prototype.$TCT = loadDataFromFile(evt.target.result);
                         Vue.prototype.$globalData.question = Object.values(Vue.prototype.$TCT.questions)[0].pk;
+                        Vue.prototype.$globalData.state = Object.values(Vue.prototype.$TCT.states)[0].pk;
+                        Vue.prototype.$globalData.issue = Object.values(Vue.prototype.$TCT.issues)[0].pk;
+                        Vue.prototype.$globalData.candidate = getListOfCandidates()[0];
                         Vue.prototype.$globalData.filename = file.name;
                     } catch(e) {
                         alert("Error parsing uploaded file: " + e)
