@@ -30,6 +30,11 @@ async function loadData() {
 }
 
 function getListOfCandidates() {
+
+    if(Object.values(Vue.prototype.$TCT.candidate_issue_score).length == 0) {
+        return [[null, null]];
+    }
+
     let arr = Object.values(Vue.prototype.$TCT.candidate_issue_score).map(c => c.fields.candidate);
     arr = Array.from(new Set(arr));
     arr = arr.map((c) => {

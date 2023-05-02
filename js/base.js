@@ -154,6 +154,7 @@ function extractJSON(raw_file, start, end, backup = null, backupEnd = null, requ
     let f = raw_file
     if(!f.includes(start)) {
         if(backup != null) {
+            console.log(`ERROR: Start [${start}] not in file provided, trying backup`)
             return extractJSON(f, backup, backupEnd == null ? end : backupEnd, null, null, required)
         }
 
@@ -219,7 +220,8 @@ function loadDataFromFile(raw_json) {
 
     let jet_data = {}
 
-    raw_json = raw_json.replaceAll("\n", "")
+    raw_json = raw_json.replaceAll("\n", "");
+    raw_json = raw_json.replaceAll("\r", "")
     raw_json = raw_json.replaceAll(/ +/g, " ");
 
     states_json = extractJSON(raw_json, "campaignTrail_temp.states_json = JSON.parse(", ");", "campaignTrail_temp.states_json = [", "]")
