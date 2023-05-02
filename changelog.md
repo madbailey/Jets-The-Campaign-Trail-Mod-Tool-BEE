@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.0.5
+
+- Add state PK field to answer state score (oops)
+
+
 ## 1.0.4
 
 - Fix new line import error for some code 2 files

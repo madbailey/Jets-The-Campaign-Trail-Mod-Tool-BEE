@@ -675,6 +675,9 @@ Vue.component('state-score', {
     <li class="mx-auto bg-gray-100 p-4">
         <h1 class="font-bold">STATE SCORE PK {{this.pk}}</h1><br>
         
+        <label for="state">State PK:</label><br>
+        <input @input="onInput($event)" :value="state" name="state" type="text"><br>
+
         <label for="candidate">Candidate <span v-if="candidateNickname" class="italic text-gray-400">({{this.candidateNickname}})</span>:</label><br>
         <input @input="onInput($event)" :value="candidate" name="candidate" type="text"><br>
 
@@ -715,6 +718,10 @@ Vue.component('state-score', {
         multiplier: function () {
             return Vue.prototype.$TCT.answer_score_state[this.pk].fields.state_multiplier;
         },
+
+        state: function() {
+            return Vue.prototype.$TCT.answer_score_state[this.pk].fields.state;
+        }
     }
 })
 
