@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.0.4
+
+- Fix new line import error for some code 2 files
+
 ## 1.0.3
 
 - Add ability to nickname candidates and have their name show next to their pk in editor
