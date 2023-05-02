@@ -143,7 +143,7 @@ function extractJSON(raw_file, start, end, backup = null, backupEnd = null) {
             return extractJSON(f, backup, backupEnd == null ? end : backupEnd)
         }
             
-        alert(`WARNING: Your uploaded code 2 is missing the section '${start}. Skipping it, but the editor may be missing some features because the section is missing. Please check your base scenario.'`)
+        alert(`WARNING: Your uploaded code 2 is missing the section '${start}'. Skipping it, but the editor may be missing some features because the section is missing. Please check your base scenario.`)
         console.log(`ERROR: Start [${start}] not in file provided, returning none`)
         return []
     }
