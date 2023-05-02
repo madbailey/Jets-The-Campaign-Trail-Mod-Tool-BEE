@@ -1,5 +1,5 @@
 class TCTData {
-    constructor(questions, answers, issues, state_issue_scores, candidate_issue_score, running_mate_issue_score, candidate_state_multiplier, answer_score_global, answer_score_issue, answer_score_state, answer_feedback, states, highest_pk) {
+    constructor(questions, answers, issues, state_issue_scores, candidate_issue_score, running_mate_issue_score, candidate_state_multiplier, answer_score_global, answer_score_issue, answer_score_state, answer_feedback, states, highest_pk, jet_data) {
         this.highest_pk = highest_pk
         this.questions = questions
         this.answers = answers
@@ -13,6 +13,7 @@ class TCTData {
         this.answer_score_state = answer_score_state
         this.answer_feedback = answer_feedback
         this.states = states
+        this.jet_data = jet_data
     }
 
     getNewPk() {
@@ -67,6 +68,14 @@ class TCTData {
     
     getCandidateStateMultipliersForState(pk) {
         return Object.values(this.candidate_state_multiplier).filter(x => x.fields.state == pk);
+    }
+
+    getNicknameForCandidate(pk) {
+        if(this.jet_data == null || this.jet_data['nicknames'] == null) {
+            return "";
+        }
+
+        return this.jet_data.nicknames[pk];
     }
 
     exportCode2() {
@@ -130,25 +139,33 @@ class TCTData {
         x = JSON.stringify(Object.values(this.answer_feedback), null, 4)
         f += (x)
         f += ("\n\n")
+
+        f += ("campaignTrail_temp.jet_data = [")
+        x = JSON.stringify(this.jet_data, null, 4)
+        
+        f += (x)
+        f += "\n]"
+        f += ("\n\n")
         return f
     }
 }
 
-function extractJSON(raw_file, start, end, backup = null, backupEnd = null) {
+function extractJSON(raw_file, start, end, backup = null, backupEnd = null, required = true, fallback = []) {
     let f = raw_file
-    if(!f.includes(start))
-    {
-        if(backup != null)
-        {
-            return extractJSON(f, backup, backupEnd == null ? end : backupEnd)
+    if(!f.includes(start)) {
+        if(backup != null) {
+            return extractJSON(f, backup, backupEnd == null ? end : backupEnd, null, null, required)
         }
-            
-        alert(`WARNING: Your uploaded code 2 is missing the section '${start}'. Skipping it, but the editor may be missing some features because the section is missing. Please check your base scenario.`)
+
         console.log(`ERROR: Start [${start}] not in file provided, returning none`)
-        return []
+            
+        if(required) {
+            alert(`WARNING: Your uploaded code 2 is missing the section '${start}'. Skipping it, but the editor may be missing some features because the section is missing. Please check your base scenario.`)
+        }
+        
+        return fallback
     }
-    else if(start.includes("JSON.parse"))
-    {
+    else if(start.includes("JSON.parse")) {
         f = f.replaceAll('\\"', '"')
         f = f.replaceAll("\\'", "'")
         f = f.replaceAll("\\\\", "\\")
@@ -156,14 +173,12 @@ function extractJSON(raw_file, start, end, backup = null, backupEnd = null) {
 
     let raw = f.trim().split(start)[1].split(end)[0].trim()
 
-    if(raw[0] == '"' || raw[0] == "'")
-    {
+    if(raw[0] == '"' || raw[0] == "'") {
         raw = raw.substring(1)
     }
         
 
-    if(raw.slice(-1) == '"' || raw.slice(-1) == "'")
-    {
+    if(raw.slice(-1) == '"' || raw.slice(-1) == "'") {
         raw = raw.substring(0, raw.length - 1)
     }
         
@@ -176,7 +191,7 @@ function extractJSON(raw_file, start, end, backup = null, backupEnd = null) {
         console.log(`Ran into error parsing JSON for start [${start}]. Copying to clipboard`)
         console.log(`"Error: ${e}`)
         navigator.clipboard.writeText(raw);
-        return []
+        return fallback
     }
     return res
 }
@@ -201,6 +216,8 @@ function loadDataFromFile(raw_json) {
     let running_mate_issue_scores = {}
 
     let issues = {}
+
+    let jet_data = {}
 
     raw_json = raw_json.replaceAll("\n", "")
     raw_json = raw_json.replaceAll(/ +/g, " ");
@@ -290,7 +307,9 @@ function loadDataFromFile(raw_json) {
         issues[key] = x;
     });
 
-    data = new TCTData(questions, answers, issues, state_issue_scores, candidate_issue_scores, running_mate_issue_scores, candidate_state_multipliers, answer_score_globals, answer_score_issues, answer_score_states, feedbacks, states, highest_pk)
+    jet_data = extractJSON(raw_json, "campaignTrail_temp.jet_data = [", "]", null, null, false, [{}])[0];
+
+    data = new TCTData(questions, answers, issues, state_issue_scores, candidate_issue_scores, running_mate_issue_scores, candidate_state_multipliers, answer_score_globals, answer_score_issues, answer_score_states, feedbacks, states, highest_pk, jet_data)
 
     return data
 }

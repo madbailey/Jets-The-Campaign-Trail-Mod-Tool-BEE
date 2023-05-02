@@ -19,7 +19,7 @@ async function loadData() {
         question: Object.values(Vue.prototype.$TCT.questions)[0].pk,
         state: Object.values(Vue.prototype.$TCT.states)[0].pk,
         issue: Object.values(Vue.prototype.$TCT.issues)[0].pk,
-        candidate: getListOfCandidates()[0],
+        candidate: getListOfCandidates()[0][0],
         filename: "default"
     });
 
@@ -31,7 +31,18 @@ async function loadData() {
 
 function getListOfCandidates() {
     let arr = Object.values(Vue.prototype.$TCT.candidate_issue_score).map(c => c.fields.candidate);
-    return Array.from(new Set(arr));
+    arr = Array.from(new Set(arr));
+    arr = arr.map((c) => {
+        nickname = Vue.prototype.$TCT.getNicknameForCandidate(c);
+        if(nickname != "" && nickname != null) {
+            nickname = ` (${nickname})`
+            return [c, c + nickname];
+        }
+        
+        return [c, c];
+    });
+
+    return arr;
 }
 
 Vue.component('toolbar', {
@@ -58,7 +69,7 @@ Vue.component('toolbar', {
                         Vue.prototype.$globalData.question = Object.values(Vue.prototype.$TCT.questions)[0].pk;
                         Vue.prototype.$globalData.state = Object.values(Vue.prototype.$TCT.states)[0].pk;
                         Vue.prototype.$globalData.issue = Object.values(Vue.prototype.$TCT.issues)[0].pk;
-                        Vue.prototype.$globalData.candidate = getListOfCandidates()[0];
+                        Vue.prototype.$globalData.candidate = getListOfCandidates()[0][0];
                         Vue.prototype.$globalData.filename = file.name;
                     } catch(e) {
                         alert("Error parsing uploaded file: " + e)
@@ -247,7 +258,7 @@ Vue.component('candidate-picker', {
     <label for="candidatePicker">Candidates:</label><br>
 
     <select @click="onClick" @change="onChange($event)" name="candidatePicker" id="candidatePicker">
-        <option v-for="c in candidates" :value="c" :key="c">{{c}}</option>
+        <option v-for="c in candidates" :value="c[0]" :key="c[0]">{{c[1]}}</option>
     </select>
 
     </div>
@@ -566,10 +577,10 @@ Vue.component('global-score', {
     <li class="mx-auto bg-gray-100 p-4">
         <h1 class="font-bold">GLOBAL SCORE PK {{this.pk}}</h1><br>
         
-        <label for="candidate">Candidate:</label><br>
+        <label for="candidate">Candidate <span v-if="candidateNickname" class="italic text-gray-400">({{this.candidateNickname}})</span>:</label><br>
         <input @input="onInput($event)" :value="candidate" name="candidate" type="text"><br>
 
-        <label for="affected_candidate">Affected Candidate:</label><br>
+        <label for="affected_candidate">Affected Candidate <span v-if="affectedNickname" class="italic text-gray-400">({{this.affectedNickname}})</span>:</label><br>
         <input @input="onInput($event)" :value="affected" name="affected_candidate" type="text"><br>
 
         <label for="global_multiplier">Global Multiplier:</label><br>
@@ -586,6 +597,15 @@ Vue.component('global-score', {
     },
 
     computed: {
+
+        candidateNickname: function() {
+            return Vue.prototype.$TCT.getNicknameForCandidate(this.candidate);
+        },
+
+        affectedNickname: function() {
+            return Vue.prototype.$TCT.getNicknameForCandidate(this.affected);
+        },
+
         candidate: function () {
           return Vue.prototype.$TCT.answer_score_global[this.pk].fields.candidate;
         },
@@ -650,10 +670,10 @@ Vue.component('state-score', {
     <li class="mx-auto bg-gray-100 p-4">
         <h1 class="font-bold">STATE SCORE PK {{this.pk}}</h1><br>
         
-        <label for="candidate">Candidate:</label><br>
+        <label for="candidate">Candidate <span v-if="candidateNickname" class="italic text-gray-400">({{this.candidateNickname}})</span>:</label><br>
         <input @input="onInput($event)" :value="candidate" name="candidate" type="text"><br>
 
-        <label for="affected_candidate">Affected Candidate:</label><br>
+        <label for="affected_candidate">Affected Candidate <span v-if="affectedNickname" class="italic text-gray-400">({{this.affectedNickname}})</span>:</label><br>
         <input @input="onInput($event)" :value="affected" name="affected_candidate" type="text"><br>
 
         <label for="state_multiplier">State Multiplier:</label><br>
@@ -670,6 +690,15 @@ Vue.component('state-score', {
     },
 
     computed: {
+
+        candidateNickname: function() {
+            return Vue.prototype.$TCT.getNicknameForCandidate(this.candidate);
+        },
+
+        affectedNickname: function() {
+            return Vue.prototype.$TCT.getNicknameForCandidate(this.affected);
+        },
+        
         candidate: function () {
           return Vue.prototype.$TCT.answer_score_state[this.pk].fields.candidate;
         },
@@ -752,7 +781,7 @@ Vue.component('candidate-state-multiplier', {
     <li class="mx-auto bg-gray-100 p-4">
         <h1 class="font-bold">CANDIDATE STATE MULTIPLIER PK {{this.pk}}</h1><br>
         
-        <label for="state_multiplier">Candidate PK {{candidate}} {{stateName}} State Multiplier:</label><br>
+        <label for="state_multiplier">Candidate PK {{candidate}} <span v-if="nickname" class="italic text-gray-400">({{this.nickname}})</span> {{stateName}} State Multiplier:</label><br>
         <input @input="onInput($event)" :value="stateMultiplier" name="state_multiplier" type="text"><br>
     </li>
     `,
@@ -770,6 +799,11 @@ Vue.component('candidate-state-multiplier', {
 
         candidate : function () {
             return Vue.prototype.$TCT.candidate_state_multiplier[this.pk].fields.candidate;
+        },
+
+        nickname: function() {
+            Vue.prototype.$globalData.filename;
+            return Vue.prototype.$TCT.getNicknameForCandidate(this.candidate);
         },
 
         stateName : function () {
@@ -917,7 +951,7 @@ Vue.component('candidate-issue-score', {
     template: `
     <div class="mx-auto bg-gray-100 p-4">
 
-        <label>Candidate PK</label><br>
+        <label>Candidate PK <span v-if="nickname" class="italic text-gray-400">({{this.nickname}})</span></label><br>
         <input @input="onInput($event)" :value="candidate" name="candidate" type="text"></input><br>
     
         <label>Issue Score</label><br>
@@ -954,6 +988,10 @@ Vue.component('candidate-issue-score', {
           
         },
 
+        nickname: function() {
+            return Vue.prototype.$TCT.getNicknameForCandidate(this.candidate);
+        },
+
         issueScore: function () {
             if(this.isRunning != "true")
             {
@@ -975,7 +1013,12 @@ Vue.component('candidate', {
     template: `
     <div class="mx-auto bg-gray-100 p-4">
 
-        <h1>Candidate PK {{this.pk}}</h1><br>
+        <h1>Candidate PK {{this.pk}} <span v-if="nickname" class="italic text-gray-400">({{this.nickname}})</span></h1><br>
+
+        <br>
+        <p>A nickname will display next to a candidate's pk so you know who they are more easily!</p>
+        <label for="nickname">Nickname:</label><br>
+        <input @input="onInputNickname($event)" :value="nickname" name="nickname" type="text"><br><br>
 
         <details open>
         <summary>Candidate State Multipliers ({{this.stateMultipliersForCandidate.length}})</summary>
@@ -993,9 +1036,27 @@ Vue.component('candidate', {
             Vue.prototype.$TCT.candidate_state_multiplier[pk].fields[evt.target.name] = evt.target.value;
         },
 
+        onInputNickname: function(evt) {
+
+            if(Vue.prototype.$TCT.jet_data.nicknames == null) {
+                Vue.prototype.$TCT.jet_data.nicknames = {}
+            }
+
+            Vue.prototype.$TCT.jet_data.nicknames[this.pk] = evt.target.value;
+
+            const temp = Vue.prototype.$globalData.filename;
+            Vue.prototype.$globalData.filename = "";
+            Vue.prototype.$globalData.filename = temp;
+        },
+
     },
 
     computed: {
+
+        nickname: function() {
+            Vue.prototype.$globalData.filename;
+            return Vue.prototype.$TCT.getNicknameForCandidate(this.pk);
+        },
 
         stateMultipliersForCandidate: function () {
             return Vue.prototype.$TCT.getStateMultiplierForCandidate(this.pk);
