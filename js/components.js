@@ -174,7 +174,7 @@ Vue.component('question-picker', {
                 "pk": newPk,
                 "fields": {
                     "priority": 0,
-                    "description": "[put description here]",
+                    "description": "put description here",
                     "likelihood": 1.0
                 }
             }
