@@ -151,7 +151,7 @@ Vue.component('question-picker', {
     template: `
     <div class="mx-auto p-6">
 
-    <label for="questionPicker">Questions:</label><br>
+    <label for="questionPicker">Questions <span class="text-gray-700 italic">({{numberOfQuestions}})</span>:</label><br>
 
     <select @click="onClick" @change="onChange($event)" name="questionPicker" id="questionPicker">
         <option v-for="question in questions" :value="question.pk" :key="question.pk" :selected="currentQuestion == question.pk">{{question.pk}} - {{questionDescription(question)}}</option>
@@ -213,6 +213,10 @@ Vue.component('question-picker', {
 
         currentQuestion: function() {
             return Vue.prototype.$globalData.question;
+        },
+
+        numberOfQuestions() {
+            return this.questions.length;
         }
     }
 })
