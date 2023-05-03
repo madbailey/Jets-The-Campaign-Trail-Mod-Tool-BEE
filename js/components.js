@@ -370,7 +370,7 @@ Vue.component('question', {
                 "pk": newPk,
                 "fields": {
                     "question": this.pk,
-                    "description": "[put description here]"
+                    "description": "put description here"
                 }
             }
             this.temp_answers = [];
@@ -493,7 +493,7 @@ Vue.component('answer', {
                 "fields": {
                     "answer": this.pk,
                     "candidate": 0,
-                    "answer_feedback": "[put feedback here, don't forget to change candidate]"
+                    "answer_feedback": "put feedback here, don't forget to change candidate"
                 }
             }
             this.feedbacks.push(feedback)
