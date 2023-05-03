@@ -154,13 +154,41 @@ Vue.component('question-picker', {
     <label for="questionPicker">Questions:</label><br>
 
     <select @click="onClick" @change="onChange($event)" name="questionPicker" id="questionPicker">
-        <option v-for="question in questions" :value="question.pk" :key="question.pk">{{question.pk}} - {{questionDescription(question)}}</option>
-    </select>
+        <option v-for="question in questions" :value="question.pk" :key="question.pk" :selected="currentQuestion == question.pk">{{question.pk}} - {{questionDescription(question)}}</option>
+    </select><br>
+
+    <button class="bg-green-500 text-white p-2 my-2 rounded hover:bg-green-600" v-on:click="addQuestion()">Add Question</button>
+
+    <p class="text-sm text-gray-700 italic">WARNING: When adding and deleting questions, remember that your code 1 needs to have the same number of questions as in your code 2!</p>
 
     </div>
     `,
 
     methods: {
+
+        addQuestion: function() {
+            const newPk =  Vue.prototype.$TCT.getNewPk();
+
+            let question = {
+                "model": "campaign_trail.question",
+                "pk": newPk,
+                "fields": {
+                    "priority": 0,
+                    "description": "[put description here]",
+                    "likelihood": 1.0
+                }
+            }
+
+            Vue.prototype.$TCT.questions[newPk] = question;
+            
+            const temp = Vue.prototype.$globalData.filename;
+            Vue.prototype.$globalData.filename = "";
+            Vue.prototype.$globalData.filename = temp;
+
+            Vue.prototype.$globalData.mode = QUESTION;
+            Vue.prototype.$globalData.question = newPk;
+        },
+
         questionDescription:function(question) {
             return question.fields.description.slice(0,12) + "...";
         },
@@ -181,6 +209,10 @@ Vue.component('question-picker', {
         questions: function () {
           let a = [Vue.prototype.$globalData.filename];
           return Object.values(Vue.prototype.$TCT.questions);
+        },
+
+        currentQuestion: function() {
+            return Vue.prototype.$globalData.question;
         }
     }
 })
@@ -235,6 +267,7 @@ Vue.component('issue-picker', {
     `,
 
     methods: {
+
         onChange:function(evt) {
             Vue.prototype.$globalData.mode = ISSUE;
             Vue.prototype.$globalData.issue = evt.target.value;
@@ -303,6 +336,8 @@ Vue.component('question', {
     template: `
     <div class="mx-auto p-4">
 
+        <button class="bg-red-500 text-white p-2 my-2 rounded hover:bg-red-600" v-on:click="deleteQuestion()">Delete Question</button><br>
+
         <h1 class="font-bold">QUESTION PK {{this.pk}}</h1><br>
         <label for="priority">Priority:</label><br>
         <input @input="onInput($event)" :value="priority" name="priority" type="text"><br>
@@ -353,6 +388,15 @@ Vue.component('question', {
             Vue.prototype.$globalData.filename = "";
             Vue.prototype.$globalData.filename = temp;
         },
+
+        deleteQuestion() {
+            delete Vue.prototype.$TCT.questions[this.pk]
+            Vue.prototype.$globalData.question = Object.values(Vue.prototype.$TCT.questions)[0].pk;
+
+            const temp = Vue.prototype.$globalData.filename;
+            Vue.prototype.$globalData.filename = "";
+            Vue.prototype.$globalData.filename = temp;
+        }
 
     },
 

@@ -1,24 +1,32 @@
 # Changelog
 
+## 1.0.6
+
+- Added ability to add/delete questions!
+
 ## 1.0.5
 
-- Add state PK field to answer state score (oops)
-
+- Added state PK field to answer state score (oops)
 
 ## 1.0.4
 
-- Fix new line import error for some code 2 files
+- Fixed new line import error for some code 2 files
 
 ## 1.0.3
 
-- Add ability to nickname candidates and have their name show next to their pk in editor
+- Added ability to nickname candidates and have their name show next to their pk in editor
 - Started saving/loading of jet_data, so the editor can save some data with the files and save state inbetween.
 
 ## 1.0.2
 
-- Gracefully handle missing parts of json
+- We now gracefully handle missing parts of json
 
 ## 1.0.1
 
 - Made homepage look a bit nicer
-- Add version and change log
+- Added version and change log
+
+## 1.0.0
+
+- First released!
+- Removed Herobrine
