@@ -98,6 +98,10 @@ class TCTData {
             f += `
 campaignTrail_temp.cyoa = true;
 
+function getQuestionNumberFromPk(pk) {
+    return campaignTrail_temp.questions_json.map(q=>q.pk).indexOf(pk) - 1;
+}
+
 cyoAdventure = function (a) {
     ans = campaignTrail_temp.player_answers[campaignTrail_temp.player_answers.length - 1];\n`
 
@@ -106,7 +110,7 @@ cyoAdventure = function (a) {
             for (let i = 0; i < events.length; i++) {
                 f += `
     ${i > 0 ? "else " : ""}if (ans == ${events[i].answer}) {
-        campaignTrail_temp.question_number = ${events[i].question};
+        campaignTrail_temp.question_number = getQuestionNumberFromPk(${events[i].question});
     }`
             }
 

@@ -1229,14 +1229,14 @@ Vue.component('cyoa-event', {
         <p class="text-sm text-gray-700 italic">The PK of the answer that leads to the next question being the below question:</p>
         <label for="answer">Answer:</label><br>
         <select @change="onChange($event)" name="answer">
-        <option v-for="answer in answers" :value="answer.pk" :key="answer.pk">{{answer.pk}} - {{description(answer)}}</option>
+        <option :selected="currentAnswer == answer.pk" v-for="answer in answers" :value="answer.pk" :key="answer.pk">{{answer.pk}} - {{description(answer)}}</option>
         </select><br>
 
 
         <p class="text-sm text-gray-700 italic">The PK of the question that is skipped to after the above answeR:</p>
         <label for="question">Question:</label><br>
         <select @change="onChange($event)" name="question">
-        <option v-for="question in questions" :value="question.pk" :key="question.pk">{{question.pk}} - {{description(question)}}</option>
+        <option :selected="currentQuestion == question.pk" v-for="question in questions" :value="question.pk" :key="question.pk">{{question.pk}} - {{description(question)}}</option>
         </select><br>
 
         <button class="bg-red-500 text-white p-2 my-2 rounded hover:bg-red-600" v-on:click="deleteEvent()">Delete CYOA Event</button>
@@ -1258,11 +1258,11 @@ Vue.component('cyoa-event', {
     },
 
     computed: {
-        question: function() {
+        currentQuestion: function() {
             return Vue.prototype.$TCT.jet_data.cyoa_data[this.id].question;
         },
 
-        answer: function() {
+        currentAnswer: function() {
             return Vue.prototype.$TCT.jet_data.cyoa_data[this.id].answer;
         },
 
