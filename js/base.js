@@ -78,6 +78,18 @@ class TCTData {
         return this.jet_data.nicknames[pk];
     }
 
+    getAllCyoaEvents() {
+        if(this.jet_data.cyoa_enabled == null) {
+            this.jet_data.cyoa_enabled = false;
+        }
+
+        if(this.jet_data.cyoa_data == null) {
+            this.jet_data.cyoa_data = {};
+        }
+
+        return Object.values(this.jet_data.cyoa_data);
+    }
+
     exportCode2() {
         let f = "";
         f += ("campaignTrail_temp.questions_json = ")
