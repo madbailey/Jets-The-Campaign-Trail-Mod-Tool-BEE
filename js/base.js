@@ -78,8 +78,52 @@ class TCTData {
         return this.jet_data.nicknames[pk];
     }
 
+    getAllCyoaEvents() {
+        if(this.jet_data.cyoa_enabled == null) {
+            this.jet_data.cyoa_enabled = false;
+        }
+
+        if(this.jet_data.cyoa_data == null) {
+            this.jet_data.cyoa_data = {};
+        }
+
+        return Object.values(this.jet_data.cyoa_data);
+    }
+
     exportCode2() {
+
         let f = "";
+
+        if(this.jet_data.cyoa_data != null && this.jet_data.cyoa_enabled) {
+            f += `
+campaignTrail_temp.cyoa = true;
+
+function getQuestionNumberFromPk(pk) {
+    return campaignTrail_temp.questions_json.map(q=>q.pk).indexOf(pk) - 1;
+}
+
+cyoAdventure = function (a) {
+    ans = campaignTrail_temp.player_answers[campaignTrail_temp.player_answers.length - 1];\n`
+
+            let events = Object.values(this.jet_data.cyoa_data);
+
+            for (let i = 0; i < events.length; i++) {
+                f += `
+    ${i > 0 ? "else " : ""}if (ans == ${events[i].answer}) {
+        campaignTrail_temp.question_number = getQuestionNumberFromPk(${events[i].question});
+    }`
+            }
+
+            if(events.length > 0) {
+                f += 
+    `\n    else {
+        return false;
+    }`
+            }
+
+            f += "\n}\n\n"
+        }
+
         f += ("campaignTrail_temp.questions_json = ")
         let x = JSON.stringify(Object.values(this.questions), null, 4).replaceAll("â€™", "\'")
         f += (x)
@@ -146,6 +190,7 @@ class TCTData {
         f += (x)
         f += "\n]"
         f += ("\n\n")
+
         return f
     }
 }
@@ -154,7 +199,7 @@ function extractJSON(raw_file, start, end, backup = null, backupEnd = null, requ
     let f = raw_file
     if(!f.includes(start)) {
         if(backup != null) {
-            console.log(`ERROR: Start [${start}] not in file provided, trying backup`)
+            console.log(`Start [${start}] not in file provided, trying backup ${backup}`)
             return extractJSON(f, backup, backupEnd == null ? end : backupEnd, null, null, required)
         }
 
@@ -194,6 +239,9 @@ function extractJSON(raw_file, start, end, backup = null, backupEnd = null, requ
         navigator.clipboard.writeText(raw);
         return fallback
     }
+
+    console.log(`found ${start}!`)
+
     return res
 }
 

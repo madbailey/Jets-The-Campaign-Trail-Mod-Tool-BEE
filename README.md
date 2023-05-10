@@ -13,11 +13,12 @@ Currently it supports importing code 2 files and then exporting them to share wi
 * Change issue effects
 * Generates new PKs automatically
 * Export and share
+* Has the ability to make CYOA mods! (Cannot import existing CYOA data from mods made outside of this program).
 
 **What this modding tool CANNOT do (yet):**
 
 * Code 1 creation (though this part is generally seen as the “easier” part of modding, so I think you guys got this!)
-* Does not support CYOA, custom endings, or any other mods that involve custom JavaScript
+* Does not support custom endings, or any other non-listed mods that involve custom JavaScript
 * Does not add any aesthetic changes to the end of code 2. You’ll have to add those manually after export.
 
 [Use it here in browser!](https://jetsimon.com/Jets-The-Campaign-Trail-Mod-Tool-Website/)
