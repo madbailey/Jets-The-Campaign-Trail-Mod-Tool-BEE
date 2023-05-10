@@ -1184,7 +1184,7 @@ Vue.component('cyoa', {
 
         addCyoaEvent: function(evt) {
             let id = Date.now();
-            Vue.prototype.$TCT.jet_data.cyoa_data[id] = {'answer':'', 'question':'', 'id':id}
+            Vue.prototype.$TCT.jet_data.cyoa_data[id] = {'answer':Object.values(Vue.prototype.$TCT.answers)[0].pk, 'question':Object.values(Vue.prototype.$TCT.questions)[0].pk, 'id':id}
             this.temp_events = [];
         },
 
