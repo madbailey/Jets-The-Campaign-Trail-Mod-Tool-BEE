@@ -1233,7 +1233,7 @@ Vue.component('cyoa-event', {
         </select><br>
 
 
-        <p class="text-sm text-gray-700 italic">The PK of the question that is skipped to after the above answeR:</p>
+        <p class="text-sm text-gray-700 italic">The PK of the question that is skipped to after the above answer:</p>
         <label for="question">Question:</label><br>
         <select @change="onChange($event)" name="question">
         <option :selected="currentQuestion == question.pk" v-for="question in questions" :value="question.pk" :key="question.pk">{{question.pk}} - {{description(question)}}</option>
