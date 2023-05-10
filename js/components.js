@@ -193,7 +193,7 @@ Vue.component('question-picker', {
         },
 
         questionDescription:function(question) {
-            return question.fields.description.slice(0,12) + "...";
+            return question.fields.description.slice(0,33) + "...";
         },
 
         onChange:function(evt) {
