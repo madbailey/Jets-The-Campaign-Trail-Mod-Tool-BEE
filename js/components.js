@@ -11,12 +11,12 @@ async function loadData() {
 
     let f = await fetch(`./public/defaultcode2.js`, {mode: "no-cors"});
     raw = await f.text();
-    
 
     Vue.prototype.$TCT = loadDataFromFile(raw);
+
     Vue.prototype.$globalData = Vue.observable({
         mode: mode,
-        question: Object.values(Vue.prototype.$TCT.questions)[0].pk,
+        question: Array.from(Vue.prototype.$TCT.questions.values())[0].pk,
         state: Object.values(Vue.prototype.$TCT.states)[0].pk,
         issue: Object.values(Vue.prototype.$TCT.issues)[0].pk,
         candidate: getListOfCandidates()[0][0],
@@ -71,7 +71,7 @@ Vue.component('toolbar', {
                 reader.onload = function (evt) {
                     try {
                         Vue.prototype.$TCT = loadDataFromFile(evt.target.result);
-                        Vue.prototype.$globalData.question = Object.values(Vue.prototype.$TCT.questions)[0].pk;
+                        Vue.prototype.$globalData.question = Array.from(Vue.prototype.$TCT.questions.values())[0].pk;
                         Vue.prototype.$globalData.state = Object.values(Vue.prototype.$TCT.states)[0].pk;
                         Vue.prototype.$globalData.issue = Object.values(Vue.prototype.$TCT.issues)[0].pk;
                         Vue.prototype.$globalData.candidate = getListOfCandidates()[0][0];
@@ -115,7 +115,7 @@ Vue.component('editor', {
     template: `
     <div class="mx-auto bg-gray-100 p-4">
 
-        <question v-if="currentMode == 'QUESTION'" :pk="question"></question>
+        <question v-if="currentMode == 'QUESTION'" :pk="parseInt(question)"></question>
         <state v-if="currentMode == 'STATE'" :pk="state"></state>
         <issue v-if="currentMode == 'ISSUE'" :pk="issue"></issue>
         <candidate v-if="currentMode == 'CANDIDATE'" :pk="candidate"></candidate>
@@ -179,7 +179,7 @@ Vue.component('question-picker', {
                 }
             }
 
-            Vue.prototype.$TCT.questions[newPk] = question;
+            Vue.prototype.$TCT.questions.set(newPk, question);
             
             const temp = Vue.prototype.$globalData.filename;
             Vue.prototype.$globalData.filename = "";
@@ -208,7 +208,7 @@ Vue.component('question-picker', {
     computed: {
         questions: function () {
           let a = [Vue.prototype.$globalData.filename];
-          return Object.values(Vue.prototype.$TCT.questions);
+          return Array.from(Vue.prototype.$TCT.questions.values());
         },
 
         currentQuestion: function() {
@@ -329,7 +329,9 @@ Vue.component('candidate-picker', {
 
 Vue.component('question', {
 
-    props: ['pk'],
+    props: {
+        pk: Number
+    },
 
     data() {
         return {
@@ -383,19 +385,19 @@ Vue.component('question', {
         },
 
         onInput: function(evt) {
-            Vue.prototype.$TCT.questions[this.pk].fields[evt.target.name] = evt.target.value;
+            Vue.prototype.$TCT.questions.get(this.pk).fields[evt.target.name] = evt.target.value;
         },
 
         onInputUpdatePicker: function(evt) {
-            Vue.prototype.$TCT.questions[this.pk].fields[evt.target.name] = evt.target.value;
+            Vue.prototype.$TCT.questions.get(this.pk).fields[evt.target.name] = evt.target.value;
             const temp = Vue.prototype.$globalData.filename;
             Vue.prototype.$globalData.filename = "";
             Vue.prototype.$globalData.filename = temp;
         },
 
         deleteQuestion() {
-            delete Vue.prototype.$TCT.questions[this.pk]
-            Vue.prototype.$globalData.question = Object.values(Vue.prototype.$TCT.questions)[0].pk;
+            delete Vue.prototype.$TCT.questions.delete(this.pk);
+            Vue.prototype.$globalData.question = Array.from(Vue.prototype.$TCT.questions.values())[0].pk;
 
             const temp = Vue.prototype.$globalData.filename;
             Vue.prototype.$globalData.filename = "";
@@ -411,15 +413,15 @@ Vue.component('question', {
         },
         
         description: function () {
-          return Vue.prototype.$TCT.questions[this.pk].fields.description;
+            return Vue.prototype.$TCT.questions.get(this.pk).fields.description;
         },
 
         priority: function () {
-            return Vue.prototype.$TCT.questions[this.pk].fields.priority;
+            return Vue.prototype.$TCT.questions.get(this.pk).fields.priority;
         },
 
         likelihood: function () {
-            return Vue.prototype.$TCT.questions[this.pk].fields.likelihood;
+            return Vue.prototype.$TCT.questions.get(this.pk).fields.likelihood;
         },
     }
 })
