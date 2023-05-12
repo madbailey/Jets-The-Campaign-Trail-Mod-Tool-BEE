@@ -1186,7 +1186,7 @@ Vue.component('cyoa', {
 
         addCyoaEvent: function(evt) {
             let id = Date.now();
-            Vue.prototype.$TCT.jet_data.cyoa_data[id] = {'answer':Object.values(Vue.prototype.$TCT.answers)[0].pk, 'question':Object.values(Vue.prototype.$TCT.questions)[0].pk, 'id':id}
+            Vue.prototype.$TCT.jet_data.cyoa_data[id] = {'answer':Object.values(Vue.prototype.$TCT.answers)[0].pk, 'question':Array.from(Vue.prototype.$TCT.questions.values())[0].pk, 'id':id}
             this.temp_events = [];
         },
 
@@ -1269,7 +1269,7 @@ Vue.component('cyoa-event', {
         },
 
         questions: function() {
-            return Object.values(Vue.prototype.$TCT.questions);
+            return Array.from(Vue.prototype.$TCT.questions.values());
         },
 
         answers: function() {
