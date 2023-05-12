@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.0.9
+
+- Fix horrible bug where question/answer fields would be reset upon adding!
+
 ## 1.0.8
 
 - Change questions to use Map instead to preserve question ordering

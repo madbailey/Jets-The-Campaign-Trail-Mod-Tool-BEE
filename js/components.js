@@ -433,14 +433,17 @@ Vue.component('question', {
         },
         
         description: function () {
+            this.temp_answers;
             return Vue.prototype.$TCT.questions.get(this.pk).fields.description;
         },
 
         priority: function () {
+            this.temp_answers;
             return Vue.prototype.$TCT.questions.get(this.pk).fields.priority;
         },
 
         likelihood: function () {
+            this.temp_answers;
             return Vue.prototype.$TCT.questions.get(this.pk).fields.likelihood;
         },
     }
@@ -576,7 +579,6 @@ Vue.component('answer', {
         },
 
         deleteFeedback: function(pk) {
-            console.log("delete feedback", pk)
             this.feedbacks = this.feedbacks.filter(a => a.pk != pk);
             delete Vue.prototype.$TCT.answer_feedback[pk];
         },
@@ -603,6 +605,10 @@ Vue.component('answer', {
 
     computed: {
         description: function () {
+          this.feedbacks;
+          this.globalScores;
+          this.issueScores;
+          this.stateScores;
           return Vue.prototype.$TCT.answers[this.pk].fields.description;
         },
     }
