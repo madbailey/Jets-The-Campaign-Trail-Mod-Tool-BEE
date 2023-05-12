@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.0.7
+
+- Added CYOA supprt
+- CYOA support does not import CYOA data from existing mods, only those made with Jet's TCT Mod Tool
 ## 1.0.6
 
 - Added ability to add/delete questions!
