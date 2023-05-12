@@ -125,7 +125,7 @@ cyoAdventure = function (a) {
         }
 
         f += ("campaignTrail_temp.questions_json = ")
-        let x = JSON.stringify(Object.values(this.questions), null, 4).replaceAll("â€™", "\'")
+        let x = JSON.stringify(Array.from(this.questions.values()), null, 4).replaceAll("â€™", "\'")
         f += (x)
         f += ("\n\n")
 
@@ -249,7 +249,7 @@ function loadDataFromFile(raw_json) {
 
     let highest_pk = -1
 
-    let questions = {}
+    let questions = new Map();
     let answers = {}
     let states = {}
     let feedbacks = {}
@@ -282,7 +282,7 @@ function loadDataFromFile(raw_json) {
     questions_json.forEach(question => {
         highest_pk = Math.max(highest_pk, question["pk"]);
         question['fields']['description'] = question['fields']['description'].replaceAll("â€™", "'").replaceAll("â€”", "—");
-        questions[question["pk"]] = question;
+        questions.set(question.pk, question);
     });
 
     answers_json = extractJSON(raw_json, "campaignTrail_temp.answers_json = JSON.parse(", ");", "campaignTrail_temp.answers_json = [", "]");
