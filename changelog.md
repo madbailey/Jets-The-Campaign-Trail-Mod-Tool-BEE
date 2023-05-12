@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.0.8
+
+- Change questions to use Map instead to preserve question ordering
+
 ## 1.0.7
 
 - Added CYOA supprt
