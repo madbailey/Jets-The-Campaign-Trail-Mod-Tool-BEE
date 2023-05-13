@@ -961,7 +961,7 @@ Vue.component('state-issue-score', {
         </select><br>
     
         <label for="state_issue_score">State Issue Score</label><br>
-        <input @input="onInput($event)" :value="stateIssueScore" name="state_issue_score" type="number">
+        <input @input="onInput($event)" :value="stateIssueScore" name="state_issue_score" type="number"><br>
     
         <label for="weight">Issue Weight</label><br>
         <input @input="onInput($event)" :value="weight" name="weight" type="number"><br>
