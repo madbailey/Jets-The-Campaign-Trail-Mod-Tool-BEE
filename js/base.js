@@ -1,3 +1,35 @@
+const TEMPLATE_NAMES =
+[
+    "1844-Clay.txt",
+    "1844-Polk.txt",
+    "1860-Douglas.txt",
+    "1860-Lincoln.txt",
+    "1896-Bryan.txt",
+    "1896-McKinley.txt",
+    "1916-Hughes.txt",
+    "1916-Wilson.txt",
+    "1948-Dewey.txt",
+    "1948-Truman.txt",
+    "1960-Kennedy.txt",
+    "1960-Nixon.txt",
+    "1968-Humphrey.txt",
+    "1968-Nixon.txt",
+    "1968-Wallace.txt",
+    "1976-Carter.txt",
+    "1976-Ford.txt",
+    "1988-Bush.txt",
+    "1988-Dukakis.txt",
+    "2000-Bush.txt",
+    "2000-Gore.txt",
+    "2000-Nader.txt",
+    "2012-Obama.txt",
+    "2012-Romney.txt",
+    "2016-Clinton.txt",
+    "2016-Trump.txt",
+    "2020-Biden.txt",
+    "2020-Trump.txt"
+]
+
 class TCTData {
     constructor(questions, answers, issues, state_issue_scores, candidate_issue_score, running_mate_issue_score, candidate_state_multiplier, answer_score_global, answer_score_issue, answer_score_state, answer_feedback, states, highest_pk, jet_data) {
         this.highest_pk = highest_pk
@@ -135,11 +167,11 @@ class TCTData {
 campaignTrail_temp.cyoa = true;
 
 function getQuestionNumberFromPk(pk) {
-    return campaignTrail_temp.questions_json.map(q=>q.pk).indexOf(pk) - 1;
+    return campaignTrail_temp.questions_json.map(q=>q.pk).indexOf(pk)-1;
 }
 
 cyoAdventure = function (a) {
-    ans = campaignTrail_temp.player_answers[campaignTrail_temp.player_answers.length - 1];\n`
+    ans = campaignTrail_temp.player_answers[campaignTrail_temp.player_answers.length-1];\n`
 
             let events = Object.values(this.jet_data.cyoa_data);
 
@@ -270,7 +302,7 @@ function extractJSON(raw_file, start, end, backup = null, backupEnd = null, requ
         
 
     if(raw.slice(-1) == '"' || raw.slice(-1) == "'") {
-        raw = raw.substring(0, raw.length - 1)
+        raw = raw.substring(0, raw.length-1)
     }
         
     try {

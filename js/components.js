@@ -6,28 +6,47 @@ const ISSUE = "ISSUE";
 const CANDIDATE = "CANDIDATE";
 const CYOA = "CYOA";
 
-async function loadData() {
+async function loadData(dataName) {
     let mode = QUESTION;
     let raw;
 
-    let f = await fetch(`./public/defaultcode2.js`, {mode: "no-cors"});
+    let f = await fetch(`./public/${dataName}`, {mode: "no-cors"});
     raw = await f.text();
+
+    if(raw == null) {
+        alert(`Loaded file ./public/${dataName} was null. Not loading.`)
+        return;
+    }
 
     Vue.prototype.$TCT = loadDataFromFile(raw);
 
-    Vue.prototype.$globalData = Vue.observable({
-        mode: mode,
-        question: Array.from(Vue.prototype.$TCT.questions.values())[0].pk,
-        state: Object.values(Vue.prototype.$TCT.states)[0].pk,
-        issue: Object.values(Vue.prototype.$TCT.issues)[0].pk,
-        candidate: getListOfCandidates()[0][0],
-        filename: "default"
-    });
+    let isNew = true;
+
+    if(Vue.prototype.$globalData == null) {
+        Vue.prototype.$globalData = Vue.observable({
+            mode: mode,
+            question: Array.from(Vue.prototype.$TCT.questions.values())[0].pk,
+            state: Object.values(Vue.prototype.$TCT.states)[0].pk,
+            issue: Object.values(Vue.prototype.$TCT.issues)[0].pk,
+            candidate: getListOfCandidates()[0][0],
+            filename: "default"
+        });
+    }
+    else {
+        isNew = false;
+        Vue.prototype.$globalData.question = Array.from(Vue.prototype.$TCT.questions.values())[0].pk;
+        Vue.prototype.$globalData.state = Object.values(Vue.prototype.$TCT.states)[0].pk;
+        Vue.prototype.$globalData.issue = Object.values(Vue.prototype.$TCT.issues)[0].pk;
+        Vue.prototype.$globalData.candidate = getListOfCandidates()[0][0];
+        Vue.prototype.$globalData.filename = dataName;
+    }
 
     console.log("Loaded data: ", data);
     console.log("Mode is: ", Vue.prototype.$globalData.mode)
 
-    app = new Vue({el: '#app', data: {}})
+    if(isNew) {
+        app = new Vue({el: '#app', data: {}})
+    }
 }
 
 function getListOfCandidates() {
@@ -344,6 +363,39 @@ Vue.component('cyoa-picker', {
         gotoCyoa:function(evt) {
             Vue.prototype.$globalData.mode = CYOA;
         },
+    }
+})
+
+Vue.component('template-picker', {
+
+    template: `
+    <div class="mx-auto p-6">
+
+    <label for="templatePicker">Choose a Template:</label><br>
+
+    <select @change="onChange" name="templatePicker" id="templatePicker">
+        <option v-for="template in templates" :value="template">{{trimmedName(template)}}</option>
+    </select>
+
+    <p class="text-sm text-gray-700 italic">WARNING: Choosing a new template will erase all existing progress!</p>
+
+    </div>
+    `,
+
+    methods: {
+        onChange:function(evt) {
+            loadData(evt.target.value);
+        },
+
+        trimmedName(f) {
+            return f.replace(".txt", "")
+        }
+    },
+
+    computed: {
+        templates: function () {
+          return TEMPLATE_NAMES;
+        }
     }
 })
 
@@ -1362,4 +1414,4 @@ Vue.component('cyoa-event', {
     }
 })
 
-loadData();
+loadData(TEMPLATE_NAMES[0]);

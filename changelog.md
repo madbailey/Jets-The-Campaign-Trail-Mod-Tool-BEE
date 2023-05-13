@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.1.3
+
+- Added a list of templates from the base scenarios so people can easily load in base Code 2 files.
+
 ## 1.1.2
 
 - Added ability to have code the persists between files.
