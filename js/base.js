@@ -230,10 +230,12 @@ cyoAdventure = function (a) {
         f += "\n]"
         f += ("\n\n")
 
-        f += "//#startcode";
-        f += code;
-        f += "//#endcode"
-
+        if(code) {
+            f += "//#startcode";
+            f += code;
+            f += "//#endcode"
+        }
+        
         return f
     }
 }
@@ -289,7 +291,7 @@ function extractJSON(raw_file, start, end, backup = null, backupEnd = null, requ
 }
 
 function extractCode(raw_json) {
-    let code = raw_json.split("//#startcode")[1].split("//#endcode")[0];
+    let code = raw_json.split("//#startcode")[1]?.split("//#endcode")[0];
     return code;
 }
 
