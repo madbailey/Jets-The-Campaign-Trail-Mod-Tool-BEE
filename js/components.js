@@ -366,9 +366,9 @@ Vue.component('question', {
 
         <h1 class="font-bold">QUESTION PK {{this.pk}}</h1><br>
         <label for="priority">Priority:</label><br>
-        <input @input="onInput($event)" :value="priority" name="priority" type="text"><br>
+        <input @input="onInput($event)" :value="priority" name="priority" type="number"><br>
         <label for="likelihood">Likelihood:</label><br>
-        <input @input="onInput($event)" :value="likelihood" name="likelihood" type="text"><br>
+        <input @input="onInput($event)" :value="likelihood" name="likelihood" type="number"><br>
         <label for="description">Description:</label><br>
         <textarea @input="onInputUpdatePicker($event)" :value="description" name="description" rows="4" cols="50"></textarea>
 
@@ -405,7 +405,12 @@ Vue.component('question', {
         },
 
         onInput: function(evt) {
-            Vue.prototype.$TCT.questions.get(this.pk).fields[evt.target.name] = evt.target.value;
+            let value = evt.target.value;
+            if(!isNaN(value)) {
+                value = Number(value);
+            }
+
+            Vue.prototype.$TCT.questions.get(this.pk).fields[evt.target.name] = value;
         },
 
         onInputUpdatePicker: function(evt) {
@@ -599,7 +604,12 @@ Vue.component('answer', {
         },
 
         onInput: function(evt) {
-            Vue.prototype.$TCT.answers[this.pk].fields[evt.target.name] = evt.target.value;
+            let value = evt.target.value;
+            if(!isNaN(value)) {
+                value = Number(value);
+            }
+
+            Vue.prototype.$TCT.answers[this.pk].fields[evt.target.name] = value;
         }
     },
 
@@ -624,7 +634,7 @@ Vue.component('answer-feedback', {
         <h1 class="font-bold">ANSWER FEEDBACK PK {{this.pk}}</h1><br>
         
         <label for="candidate">Candidate:</label><br>
-        <input @input="onInput($event)" :value="candidate" name="candidate" type="text"><br>
+        <input @input="onInput($event)" :value="candidate" name="candidate" type="number"><br>
 
         <label for="answer_feedback">Answer Feedback:</label><br>
         <textarea @input="onInput($event)" :value="answerFeedback" name="answer_feedback" rows="4" cols="50"></textarea><br>
@@ -635,7 +645,13 @@ Vue.component('answer-feedback', {
 
     methods: {
         onInput: function(evt) {
-            Vue.prototype.$TCT.answer_feedback[this.pk].fields[evt.target.name] = evt.target.value;
+
+            let value = evt.target.value;
+            if(!isNaN(value)) {
+                value = Number(value);
+            }
+
+            Vue.prototype.$TCT.answer_feedback[this.pk].fields[evt.target.name] = value;
         }
     },
 
@@ -659,13 +675,13 @@ Vue.component('global-score', {
         <h1 class="font-bold">GLOBAL SCORE PK {{this.pk}}</h1><br>
         
         <label for="candidate">Candidate <span v-if="candidateNickname" class="italic text-gray-400">({{this.candidateNickname}})</span>:</label><br>
-        <input @input="onInput($event)" :value="candidate" name="candidate" type="text"><br>
+        <input @input="onInput($event)" :value="candidate" name="candidate" type="number"><br>
 
         <label for="affected_candidate">Affected Candidate <span v-if="affectedNickname" class="italic text-gray-400">({{this.affectedNickname}})</span>:</label><br>
-        <input @input="onInput($event)" :value="affected" name="affected_candidate" type="text"><br>
+        <input @input="onInput($event)" :value="affected" name="affected_candidate" type="number"><br>
 
         <label for="global_multiplier">Global Multiplier:</label><br>
-        <input @input="onInput($event)" :value="multiplier" name="global_multiplier" type="text"><br>
+        <input @input="onInput($event)" :value="multiplier" name="global_multiplier" type="number"><br>
 
         <button class="bg-red-500 text-white p-2 my-2 rounded hover:bg-red-600" v-on:click="$emit('deleteGlobalScore', pk)">Delete Global Score</button>
         </li>
@@ -673,7 +689,13 @@ Vue.component('global-score', {
 
     methods: {
         onInput: function(evt) {
-            Vue.prototype.$TCT.answer_score_global[this.pk].fields[evt.target.name] = evt.target.value;
+
+            let value = evt.target.value;
+            if(!isNaN(value)) {
+                value = Number(value);
+            }
+
+            Vue.prototype.$TCT.answer_score_global[this.pk].fields[evt.target.name] = value;
         }
     },
 
@@ -710,13 +732,13 @@ Vue.component('issue-score', {
         <h1 class="font-bold">ISSUE SCORE PK {{this.pk}}</h1><br>
         
         <label for="issue">Issue PK:</label><br>
-        <input @input="onInput($event)" :value="issue" name="issue" type="text"><br>
+        <input @input="onInput($event)" :value="issue" name="issue" type="number"><br>
 
         <label for="issue_score">Issue Score:</label><br>
-        <input @input="onInput($event)" :value="issueScore" name="issue_score" type="text"><br>
+        <input @input="onInput($event)" :value="issueScore" name="issue_score" type="number"><br>
 
         <label for="issue_importance">Issue Importance:</label><br>
-        <input @input="onInput($event)" :value="issueImportance" name="issue_importance" type="text"><br>
+        <input @input="onInput($event)" :value="issueImportance" name="issue_importance" type="number"><br>
    
         <button class="bg-red-500 text-white p-2 my-2 rounded hover:bg-red-600" v-on:click="$emit('deleteIssueScore', pk)">Delete Issue Score</button>
     </li>
@@ -724,7 +746,13 @@ Vue.component('issue-score', {
 
     methods: {
         onInput: function(evt) {
-            Vue.prototype.$TCT.answer_score_issue[this.pk].fields[evt.target.name] = evt.target.value;
+
+            let value = evt.target.value;
+            if(!isNaN(value)) {
+                value = Number(value);
+            }
+
+            Vue.prototype.$TCT.answer_score_issue[this.pk].fields[evt.target.name] = value;
         }
     },
 
@@ -752,16 +780,16 @@ Vue.component('state-score', {
         <h1 class="font-bold">STATE SCORE PK {{this.pk}}</h1><br>
         
         <label for="state">State PK:</label><br>
-        <input @input="onInput($event)" :value="state" name="state" type="text"><br>
+        <input @input="onInput($event)" :value="state" name="state" type="number"><br>
 
         <label for="candidate">Candidate <span v-if="candidateNickname" class="italic text-gray-400">({{this.candidateNickname}})</span>:</label><br>
-        <input @input="onInput($event)" :value="candidate" name="candidate" type="text"><br>
+        <input @input="onInput($event)" :value="candidate" name="candidate" type="number"><br>
 
         <label for="affected_candidate">Affected Candidate <span v-if="affectedNickname" class="italic text-gray-400">({{this.affectedNickname}})</span>:</label><br>
-        <input @input="onInput($event)" :value="affected" name="affected_candidate" type="text"><br>
+        <input @input="onInput($event)" :value="affected" name="affected_candidate" type="number"><br>
 
         <label for="state_multiplier">State Multiplier:</label><br>
-        <input @input="onInput($event)" :value="multiplier" name="state_multiplier" type="text"><br>
+        <input @input="onInput($event)" :value="multiplier" name="state_multiplier" type="number"><br>
 
         <button class="bg-red-500 text-white p-2 my-2 rounded hover:bg-red-600" v-on:click="$emit('deleteStateScore', pk)">Delete State Score</button>
     </li>
@@ -769,7 +797,13 @@ Vue.component('state-score', {
 
     methods: {
         onInput: function(evt) {
-            Vue.prototype.$TCT.answer_score_state[this.pk].fields[evt.target.name] = evt.target.value;
+            
+            let value = evt.target.value;
+            if(!isNaN(value)) {
+                value = Number(value);
+            }
+
+            Vue.prototype.$TCT.answer_score_state[this.pk].fields[evt.target.name] = value;
         }
     },
 
@@ -810,9 +844,9 @@ Vue.component('state', {
 
     <h1 class="font-bold">{{stateName}} - STATE PK {{this.pk}}</h1><br>
     <label for="electoral_votes">Electoral Votes:</label><br>
-    <input @input="onInput($event)" :value="electoralVotes" name="electoral_votes" type="text"><br>
+    <input @input="onInput($event)" :value="electoralVotes" name="electoral_votes" type="number"><br>
     <label for="popular_votes">Popular Votes:</label><br>
-    <input @input="onInput($event)" :value="popularVotes" name="popular_votes" type="text"><br>
+    <input @input="onInput($event)" :value="popularVotes" name="popular_votes" type="number"><br>
 
     <details open>
     <summary>Candidate State Multipliers ({{this.candidateStateMultipliers.length}})</summary>
@@ -833,7 +867,13 @@ Vue.component('state', {
 
     methods: {
         onInput: function(evt) {
-            Vue.prototype.$TCT.states[this.pk].fields[evt.target.name] = evt.target.value;
+
+            let value = evt.target.value;
+            if(!isNaN(value)) {
+                value = Number(value);
+            }
+
+            Vue.prototype.$TCT.states[this.pk].fields[evt.target.name] = value;
         }
     },
 
@@ -870,13 +910,19 @@ Vue.component('candidate-state-multiplier', {
         <h1 class="font-bold">CANDIDATE STATE MULTIPLIER PK {{this.pk}}</h1><br>
         
         <label for="state_multiplier">Candidate PK {{candidate}} <span v-if="nickname" class="italic text-gray-400">({{this.nickname}})</span> {{stateName}} State Multiplier:</label><br>
-        <input @input="onInput($event)" :value="stateMultiplier" name="state_multiplier" type="text"><br>
+        <input @input="onInput($event)" :value="stateMultiplier" name="state_multiplier" type="number"><br>
     </li>
     `,
 
     methods: {
         onInput: function(evt) {
-            Vue.prototype.$TCT.candidate_state_multiplier[this.pk].fields[evt.target.name] = evt.target.value;
+
+            let value = evt.target.value;
+            if(!isNaN(value)) {
+                value = Number(value);
+            }
+
+            Vue.prototype.$TCT.candidate_state_multiplier[this.pk].fields[evt.target.name] = value;
         }
     },
 
@@ -915,17 +961,23 @@ Vue.component('state-issue-score', {
         </select><br>
     
         <label for="state_issue_score">State Issue Score</label><br>
-        <input @input="onInput($event)" :value="stateIssueScore" name="state_issue_score" type="text"><br>
+        <input @input="onInput($event)" :value="stateIssueScore" name="state_issue_score" type="number">
     
         <label for="weight">Issue Weight</label><br>
-        <input @input="onInput($event)" :value="weight" name="weight" type="text"><br>
+        <input @input="onInput($event)" :value="weight" name="weight" type="number"><br>
     
     </li>
     `,
 
     methods: {
         onInput: function(evt) {
-            Vue.prototype.$TCT.state_issue_scores[this.pk].fields[evt.target.name] = evt.target.value;
+
+            let value = evt.target.value;
+            if(!isNaN(value)) {
+                value = Number(value);
+            }
+
+            Vue.prototype.$TCT.state_issue_scores[this.pk].fields[evt.target.name] = value;
         },
     },
 
@@ -985,7 +1037,13 @@ Vue.component('issue', {
     methods: {
 
         onInput: function(evt) {
-            Vue.prototype.$TCT.issues[this.pk].fields[evt.target.name] = evt.target.value;
+
+            let value = evt.target.value;
+            if(!isNaN(value)) {
+                value = Number(value);
+            }
+
+            Vue.prototype.$TCT.issues[this.pk].fields[evt.target.name] = value;
         },
 
         onInputUpdatePicker: function(evt) {
@@ -1048,10 +1106,10 @@ Vue.component('candidate-issue-score', {
     <div class="mx-auto bg-gray-100 p-4">
 
         <label>Candidate PK <span v-if="nickname" class="italic text-gray-400">({{this.nickname}})</span></label><br>
-        <input @input="onInput($event)" :value="candidate" name="candidate" type="text"></input><br>
+        <input @input="onInput($event)" :value="candidate" name="candidate" type="number"></input><br>
     
         <label>Issue Score</label><br>
-        <input @input="onInput($event)" :value="issueScore" name="issue_score" type="text"></input><br>
+        <input @input="onInput($event)" :value="issueScore" name="issue_score" type="number"></input><br>
     
     </div>
     `,
@@ -1059,13 +1117,19 @@ Vue.component('candidate-issue-score', {
     methods: {
 
         onInput: function(evt) {
+
+            let value = evt.target.value;
+            if(!isNaN(value)) {
+                value = Number(value);
+            }
+
             if(this.isRunning != "true")
             {
-                Vue.prototype.$TCT.candidate_issue_score[this.pk].fields[evt.target.name] = evt.target.value;
+                Vue.prototype.$TCT.candidate_issue_score[this.pk].fields[evt.target.name] = value;
             }
             else
             {
-                Vue.prototype.$TCT.running_mate_issue_score[this.pk].fields[evt.target.name] = evt.target.value;
+                Vue.prototype.$TCT.running_mate_issue_score[this.pk].fields[evt.target.name] = value;
             }
         },
 
@@ -1129,7 +1193,13 @@ Vue.component('candidate', {
     methods: {
 
         onInput: function(evt, pk) {
-            Vue.prototype.$TCT.candidate_state_multiplier[pk].fields[evt.target.name] = evt.target.value;
+
+            let value = evt.target.value;
+            if(!isNaN(value)) {
+                value = Number(value);
+            }
+
+            Vue.prototype.$TCT.candidate_state_multiplier[pk].fields[evt.target.name] = value;
         },
 
         onInputNickname: function(evt) {

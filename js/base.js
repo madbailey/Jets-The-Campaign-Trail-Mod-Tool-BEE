@@ -14,6 +14,42 @@ class TCTData {
         this.answer_feedback = answer_feedback
         this.states = states
         this.jet_data = jet_data
+
+        this.cleanAllData();
+    }
+
+    cleanAllData() {
+        this.cleanMap(this.questions);
+        this.clean(this.answers);
+        this.clean(this.issues);
+        this.clean(this.state_issue_scores);
+        this.clean(this.candidate_issue_score);
+        this.clean(this.running_mate_issue_score);
+        this.clean(this.candidate_state_multiplier);
+        this.clean(this.answer_score_global);
+        this.clean(this.answer_score_issue);
+        this.clean(this.answer_score_state);
+        this.clean(this.answer_feedback);
+        this.clean(this.states);
+    }
+
+    cleanMap(map) {
+        for (let [key, value] of map) {
+            if(typeof value === 'object') {
+                this.clean(map.get(key))
+            }
+        } 
+    }
+
+    clean(obj) {
+        for (let key in obj) {
+            if(!isNaN(obj[key])) {
+                obj[key] = Number(obj[key]);
+            }
+            else if(typeof obj[key] === 'object') {
+                this.clean(obj[key])
+            }
+        }
     }
 
     getNewPk() {

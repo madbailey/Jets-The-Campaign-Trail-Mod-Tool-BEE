@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.1.1
+
+- Made it so imported JSON is sanitized for numbers, so cannot have NaN errors.
+- Made it so when you input text it tries to convert to number when possible!
+- Thanks Astro! 
+
 ## 1.1.0
 
 - Added warning on import if duplicate PKs are found (Thanks Astro!)
