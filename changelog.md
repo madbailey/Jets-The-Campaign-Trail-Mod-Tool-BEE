@@ -1,5 +1,18 @@
 # Changelog
 
+## 1.1.2
+
+- Added ability to have code the persists between files.
+    - Code must have a //#startcode before it.
+    - Code must have a //#endcode after it.
+    - There can only be one instance of those tags in your code.
+    - Example:
+
+        //#startcode
+        console.log("Hello World");
+        //#endcode
+
+
 ## 1.1.1
 
 - Made it so imported JSON is sanitized for numbers, so cannot have NaN errors.

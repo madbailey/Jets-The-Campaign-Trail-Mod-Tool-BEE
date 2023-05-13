@@ -220,12 +220,19 @@ cyoAdventure = function (a) {
         f += (x)
         f += ("\n\n")
 
+        const code = this.jet_data.code_to_add;
+        delete this.jet_data.code_to_add;
+
         f += ("campaignTrail_temp.jet_data = [")
         x = JSON.stringify(this.jet_data, null, 4)
         
         f += (x)
         f += "\n]"
         f += ("\n\n")
+
+        f += "//#startcode";
+        f += code;
+        f += "//#endcode"
 
         return f
     }
@@ -281,6 +288,11 @@ function extractJSON(raw_file, start, end, backup = null, backupEnd = null, requ
     return res
 }
 
+function extractCode(raw_json) {
+    let code = raw_json.split("//#startcode")[1].split("//#endcode")[0];
+    return code;
+}
+
 function loadDataFromFile(raw_json) {
 
     let highest_pk = -1
@@ -303,6 +315,8 @@ function loadDataFromFile(raw_json) {
     let issues = {}
 
     let jet_data = {}
+
+    const code = extractCode(raw_json);
 
     raw_json = raw_json.replaceAll("\n", "");
     raw_json = raw_json.replaceAll("\r", "")
@@ -455,6 +469,8 @@ function loadDataFromFile(raw_json) {
     });
 
     jet_data = extractJSON(raw_json, "campaignTrail_temp.jet_data = [", "]", null, null, false, [{}])[0];
+
+    jet_data.code_to_add = code;
 
     data = new TCTData(questions, answers, issues, state_issue_scores, candidate_issue_scores, running_mate_issue_scores, candidate_state_multipliers, answer_score_globals, answer_score_issues, answer_score_states, feedbacks, states, highest_pk, jet_data)
 

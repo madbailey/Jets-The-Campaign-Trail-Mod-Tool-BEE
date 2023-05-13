@@ -42,3 +42,9 @@ campaignTrail_temp.questions_json = JSON.parse(
   campaignTrail_temp.running_mate_last_name = "Cheney";
   campaignTrail_temp.running_mate_state_id = "231";
   
+
+  //#startcode
+
+  console.log("Test test test");
+
+  //#endcode
