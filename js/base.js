@@ -274,12 +274,22 @@ function loadDataFromFile(raw_json) {
 
     states_json = extractJSON(raw_json, "campaignTrail_temp.states_json = JSON.parse(", ");", "campaignTrail_temp.states_json = [", "]")
     states_json.forEach(state => {
+
+        if(state["pk"] in states) {
+            alert(`WARNING: Found duplicate pk ${state["pk"]} in states already, make sure there are no duplicate PKs in your file before importing`)
+        }
+
         highest_pk = Math.max(highest_pk, state["pk"])
         states[state["pk"]] = state
     });
        
     questions_json = extractJSON(raw_json, "campaignTrail_temp.questions_json = JSON.parse(", ");", "campaignTrail_temp.questions_json = [", "]");
     questions_json.forEach(question => {
+
+        if(question["pk"] in questions) {
+            alert(`WARNING: Found duplicate pk ${question["pk"]} in questions already, make sure there are no duplicate PKs in your file before importing`)
+        }
+
         highest_pk = Math.max(highest_pk, question["pk"]);
         question['fields']['description'] = question['fields']['description'].replaceAll("â€™", "'").replaceAll("â€”", "—");
         questions.set(question.pk, question);
@@ -287,6 +297,11 @@ function loadDataFromFile(raw_json) {
 
     answers_json = extractJSON(raw_json, "campaignTrail_temp.answers_json = JSON.parse(", ");", "campaignTrail_temp.answers_json = [", "]");
     answers_json.forEach(answer => {
+
+        if(answer["pk"] in answers) {
+            alert(`WARNING: Found duplicate pk ${answer["pk"]} in answers already, make sure there are no duplicate PKs in your file before importing`)
+        }
+
         highest_pk = Math.max(highest_pk, answer["pk"]);
         answer['fields']['description'] = answer['fields']['description'].replaceAll("â€™", "'").replaceAll("â€”", "—");
         key = answer["pk"];
@@ -295,6 +310,11 @@ function loadDataFromFile(raw_json) {
 
     answer_feedbacks_json = extractJSON(raw_json, "campaignTrail_temp.answer_feedback_json = JSON.parse(", ");", "campaignTrail_temp.answer_feedback_json = [", "]");
     answer_feedbacks_json.forEach(feedback => {
+
+        if(feedback["pk"] in feedbacks) {
+            alert(`WARNING: Found duplicate pk ${feedback["pk"]} in feedbacks already, make sure there are no duplicate PKs in your file before importing`)
+        }
+
         highest_pk = Math.max(highest_pk, feedback["pk"]);
         feedback['fields']['answer_feedback'] = feedback['fields']['answer_feedback'].replaceAll("â€™", "'").replaceAll("â€”", "—");
         key = feedback['pk'];
@@ -303,6 +323,12 @@ function loadDataFromFile(raw_json) {
 
     answer_score_globals_json = extractJSON(raw_json, "campaignTrail_temp.answer_score_global_json = JSON.parse(", ");", "campaignTrail_temp.answer_score_global_json = [", "]");
     answer_score_globals_json.forEach(x => {
+
+        if(x["pk"] in answer_score_globals) {
+            alert(`WARNING: Found duplicate pk ${x["pk"]} in answer_score_globals already, make sure there are no duplicate PKs in your file before importing`)
+        }
+
+
         highest_pk = Math.max(highest_pk, x["pk"]);
         key = x['pk'];
         answer_score_globals[key] = x;
@@ -310,6 +336,11 @@ function loadDataFromFile(raw_json) {
 
     answer_score_issues_json = extractJSON(raw_json, "campaignTrail_temp.answer_score_issue_json = JSON.parse(", ");", "campaignTrail_temp.answer_score_issue_json = [", "]");
     answer_score_issues_json.forEach(x => {
+
+        if(x["pk"] in answer_score_issues) {
+            alert(`WARNING: Found duplicate pk ${x["pk"]} in answer_score_issues already, make sure there are no duplicate PKs in your file before importing`)
+        }
+
         highest_pk = Math.max(highest_pk, x["pk"]);
         key = x['pk'];
         answer_score_issues[key] = x;
@@ -317,6 +348,11 @@ function loadDataFromFile(raw_json) {
 
     answer_score_states_json = extractJSON(raw_json, "campaignTrail_temp.answer_score_state_json = JSON.parse(", ");", "campaignTrail_temp.answer_score_state_json = [", "]");
     answer_score_states_json.forEach(x => {
+
+        if(x["pk"] in answer_score_states) {
+            alert(`WARNING: Found duplicate pk ${x["pk"]} in answer_score_states already, make sure there are no duplicate PKs in your file before importing`)
+        }
+
         highest_pk = Math.max(highest_pk, x["pk"]);
         key = x['pk'];
         answer_score_states[key] = x;
@@ -324,6 +360,11 @@ function loadDataFromFile(raw_json) {
 
     candidate_issue_scores_json = extractJSON(raw_json, "campaignTrail_temp.candidate_issue_score_json = JSON.parse(", ");", "campaignTrail_temp.candidate_issue_score_json = [", "]");
     candidate_issue_scores_json.forEach(x => {
+
+        if(x["pk"] in candidate_issue_scores) {
+            alert(`WARNING: Found duplicate pk ${x["pk"]} in candidate_issue_scores already, make sure there are no duplicate PKs in your file before importing`)
+        }
+
         highest_pk = Math.max(highest_pk, x["pk"]);
         key = x['pk'];
         candidate_issue_scores[key] = x;
@@ -331,6 +372,11 @@ function loadDataFromFile(raw_json) {
 
     candidate_state_multipliers_json = extractJSON(raw_json, "campaignTrail_temp.candidate_state_multiplier_json = JSON.parse(", ");", "campaignTrail_temp.candidate_state_multiplier_json = [", "]");
     candidate_state_multipliers_json.forEach(x => {
+
+        if(x["pk"] in candidate_state_multipliers) {
+            alert(`WARNING: Found duplicate pk ${x["pk"]} in candidate_state_multipliers already, make sure there are no duplicate PKs in your file before importing`)
+        }
+
         highest_pk = Math.max(highest_pk, x["pk"]);
         key = x['pk'];
         candidate_state_multipliers[key] = x;
@@ -338,6 +384,11 @@ function loadDataFromFile(raw_json) {
 
     running_mate_issue_scores_json = extractJSON(raw_json, "campaignTrail_temp.running_mate_issue_score_json = JSON.parse(", ");", "campaignTrail_temp.running_mate_issue_score_json = [", "]");
     running_mate_issue_scores_json.forEach(x => {
+
+        if(x["pk"] in running_mate_issue_scores) {
+            alert(`WARNING: Found duplicate pk ${x["pk"]} in running_mate_issue_scores already, make sure there are no duplicate PKs in your file before importing`)
+        }
+
         highest_pk = Math.max(highest_pk, x["pk"]);
         key = x['pk'];
         running_mate_issue_scores[key] = x;
@@ -345,6 +396,11 @@ function loadDataFromFile(raw_json) {
 
     state_issue_scores_json = extractJSON(raw_json, "campaignTrail_temp.state_issue_score_json = JSON.parse(", ");", "campaignTrail_temp.state_issue_score_json = [", "]");
     state_issue_scores_json.forEach(x => {
+
+        if(x["pk"] in state_issue_scores) {
+            alert(`WARNING: Found duplicate pk ${x["pk"]} in state_issue_scores already, make sure there are no duplicate PKs in your file before importing`)
+        }
+
         highest_pk = Math.max(highest_pk, x["pk"]);
         key = x['pk'];
         state_issue_scores[key] = x;
@@ -352,6 +408,11 @@ function loadDataFromFile(raw_json) {
 
     issues_json = extractJSON(raw_json, "campaignTrail_temp.issues_json = JSON.parse(", ");", "campaignTrail_temp.issues_json = [", "]");
     issues_json.forEach(x => {
+
+        if(x["pk"] in issues) {
+            alert(`WARNING: Found duplicate pk ${x["pk"]} in issues already, make sure there are no duplicate PKs in your file before importing`)
+        }
+
         highest_pk = Math.max(highest_pk, x["pk"]);
         key = x['pk'];
         issues[key] = x;

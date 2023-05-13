@@ -1,17 +1,23 @@
 # Changelog
 
+## 1.1.0
+
+- Added warning on import if duplicate PKs are found (Thanks Astro!)
+- Changed the state issue score issue pk to be a dropdown menu
+
 ## 1.0.9
 
-- Fix horrible bug where question/answer fields would be reset upon adding!
+- Fixed horrible bug where question/answer fields would be reset upon adding!
 
 ## 1.0.8
 
-- Change questions to use Map instead to preserve question ordering
+- Changed questions to use Map instead to preserve question ordering
 
 ## 1.0.7
 
 - Added CYOA supprt
 - CYOA support does not import CYOA data from existing mods, only those made with Jet's TCT Mod Tool
+
 ## 1.0.6
 
 - Added ability to add/delete questions!

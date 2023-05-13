@@ -910,7 +910,9 @@ Vue.component('state-issue-score', {
         <h1 class="font-bold">STATE ISSUE SCORE PK {{this.pk}}</h1><br>
         
         <label for="issue">Issue PK</label><br>
-        <input @input="onInput($event)" :value="issue" name="issue" type="text"><br>
+        <select @change="onInput($event)" name="issue">
+            <option v-for="issue in issues" :selected="issue.pk == currentIssue" :value="issue.pk" :key="issue.pk">{{issue.pk}} - {{issue.fields.name}}</option>
+        </select><br>
     
         <label for="state_issue_score">State Issue Score</label><br>
         <input @input="onInput($event)" :value="stateIssueScore" name="state_issue_score" type="text"><br>
@@ -924,11 +926,17 @@ Vue.component('state-issue-score', {
     methods: {
         onInput: function(evt) {
             Vue.prototype.$TCT.state_issue_scores[this.pk].fields[evt.target.name] = evt.target.value;
-        }
+        },
     },
 
     computed: {
-        issue: function () {
+
+        issues: function () {
+            let a = [Vue.prototype.$globalData.filename];
+            return Object.values(Vue.prototype.$TCT.issues);
+        },
+
+        currentIssue: function () {
             return Vue.prototype.$TCT.state_issue_scores[this.pk].fields.issue;
         },
 
