@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.1.4
+
+- Added copy code 2 to clipboard option
+
 ## 1.1.3
 
 - Added a list of templates from the base scenarios so people can easily load in base Code 2 files.

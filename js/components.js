@@ -76,6 +76,7 @@ Vue.component('toolbar', {
     <input type="file" id="file" style="display:none;" @change="fileUploaded($event)"></input>
     <button class="bg-gray-300 p-2 m-2 rounded hover:bg-gray-500" v-on:click="importCode2()">Import Code 2</button>
     <button class="bg-gray-300 p-2 m-2 rounded hover:bg-gray-500" v-on:click="exportCode2()">Export Code 2</button>
+    <button class="bg-gray-300 p-2 m-2 rounded hover:bg-gray-500" v-on:click="clipboardCode2()">Copy to Clipboard</button>
     <br>
     </div>
     `,
@@ -127,6 +128,11 @@ Vue.component('toolbar', {
             element.click();
 
             document.body.removeChild(element);
+        },
+
+        clipboardCode2: function() {
+            const f = Vue.prototype.$TCT.exportCode2();
+            navigator.clipboard.writeText(f);
         }
     }
 })
