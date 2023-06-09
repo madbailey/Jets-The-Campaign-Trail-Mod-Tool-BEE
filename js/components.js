@@ -6,6 +6,10 @@ const ISSUE = "ISSUE";
 const CANDIDATE = "CANDIDATE";
 const CYOA = "CYOA";
 
+function shouldBeSavedAsNumber(value) {
+    return !isNaN(value) && !(value != "0" && Number(value) == 0);
+}
+
 async function loadData(dataName) {
     let mode = QUESTION;
     let raw;
@@ -464,7 +468,7 @@ Vue.component('question', {
 
         onInput: function(evt) {
             let value = evt.target.value;
-            if(!isNaN(value)) {
+            if(shouldBeSavedAsNumber(value)) {
                 value = Number(value);
             }
 
@@ -663,7 +667,7 @@ Vue.component('answer', {
 
         onInput: function(evt) {
             let value = evt.target.value;
-            if(!isNaN(value)) {
+            if(shouldBeSavedAsNumber(value)) {
                 value = Number(value);
             }
 
@@ -705,7 +709,7 @@ Vue.component('answer-feedback', {
         onInput: function(evt) {
 
             let value = evt.target.value;
-            if(!isNaN(value)) {
+            if(shouldBeSavedAsNumber(value)) {
                 value = Number(value);
             }
 
@@ -749,9 +753,12 @@ Vue.component('global-score', {
         onInput: function(evt) {
 
             let value = evt.target.value;
-            if(!isNaN(value)) {
+
+            if(shouldBeSavedAsNumber(value)) {
                 value = Number(value);
             }
+
+            console.log(value);
 
             Vue.prototype.$TCT.answer_score_global[this.pk].fields[evt.target.name] = value;
         }
@@ -806,7 +813,7 @@ Vue.component('issue-score', {
         onInput: function(evt) {
 
             let value = evt.target.value;
-            if(!isNaN(value)) {
+            if(shouldBeSavedAsNumber(value)) {
                 value = Number(value);
             }
 
@@ -857,7 +864,7 @@ Vue.component('state-score', {
         onInput: function(evt) {
             
             let value = evt.target.value;
-            if(!isNaN(value)) {
+            if(shouldBeSavedAsNumber(value)) {
                 value = Number(value);
             }
 
@@ -927,7 +934,7 @@ Vue.component('state', {
         onInput: function(evt) {
 
             let value = evt.target.value;
-            if(!isNaN(value)) {
+            if(shouldBeSavedAsNumber(value)) {
                 value = Number(value);
             }
 
@@ -976,7 +983,7 @@ Vue.component('candidate-state-multiplier', {
         onInput: function(evt) {
 
             let value = evt.target.value;
-            if(!isNaN(value)) {
+            if(shouldBeSavedAsNumber(value)) {
                 value = Number(value);
             }
 
@@ -1031,7 +1038,7 @@ Vue.component('state-issue-score', {
         onInput: function(evt) {
 
             let value = evt.target.value;
-            if(!isNaN(value)) {
+            if(shouldBeSavedAsNumber(value)) {
                 value = Number(value);
             }
 
@@ -1097,7 +1104,7 @@ Vue.component('issue', {
         onInput: function(evt) {
 
             let value = evt.target.value;
-            if(!isNaN(value)) {
+            if(shouldBeSavedAsNumber(value)) {
                 value = Number(value);
             }
 
@@ -1177,7 +1184,7 @@ Vue.component('candidate-issue-score', {
         onInput: function(evt) {
 
             let value = evt.target.value;
-            if(!isNaN(value)) {
+            if(shouldBeSavedAsNumber(value)) {
                 value = Number(value);
             }
 
@@ -1253,7 +1260,7 @@ Vue.component('candidate', {
         onInput: function(evt, pk) {
 
             let value = evt.target.value;
-            if(!isNaN(value)) {
+            if(shouldBeSavedAsNumber(value)) {
                 value = Number(value);
             }
 

@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.1.5
+
+- Fix glitchy number entry bug
+
 ## 1.1.4
 
 - Added copy code 2 to clipboard option
