@@ -262,6 +262,13 @@ cyoAdventure = function (a) {
         f += "\n]"
         f += ("\n\n")
 
+        if(this.jet_data.banner_enabled) {
+            f += `campaignTrail_temp.candidate_image_url = "${this.jet_data.banner_data.canImage}"\n`;
+            f += `campaignTrail_temp.running_mate_image_url = "${this.jet_data.banner_data.runImage}"\n`;
+            f += `campaignTrail_temp.candidate_last_name = "${this.jet_data.banner_data.canName}"\n`;
+            f += `campaignTrail_temp.running_mate_last_name = "${this.jet_data.banner_data.runName}"\n\n`;
+        }
+
         if(code) {
             f += "//#startcode";
             f += code;
