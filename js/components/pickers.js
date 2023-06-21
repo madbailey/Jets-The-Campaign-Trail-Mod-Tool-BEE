@@ -245,3 +245,20 @@ Vue.component('template-picker', {
         }
     }
 })
+
+Vue.component('ending-picker', {
+
+    template: `
+    <div class="mx-auto p-6">
+
+    <button class="bg-gray-300 p-2 my-2 rounded hover:bg-gray-500" v-on:click="gotoEndings()">Custom Endings</button>
+
+    </div>
+    `,
+
+    methods: {
+        gotoEndings:function(evt) {
+            Vue.prototype.$globalData.mode = ENDINGS;
+        },
+    }
+})

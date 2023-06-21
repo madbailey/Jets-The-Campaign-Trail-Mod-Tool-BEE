@@ -6,6 +6,7 @@ const ISSUE = "ISSUE";
 const CANDIDATE = "CANDIDATE";
 const CYOA = "CYOA";
 const BANNER = "BANNER";
+const ENDINGS = "ENDINGS";
 
 function shouldBeSavedAsNumber(value) {
     return !isNaN(value) && !(value != "0" && Number(value) == 0);

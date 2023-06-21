@@ -158,39 +158,23 @@ class TCTData {
         return Object.values(this.jet_data.cyoa_data);
     }
 
+    getAllEndings() {
+        if(this.jet_data.endings_enabled == null) {
+            this.jet_data.endings_enabled = false;
+        }
+
+        if(this.jet_data.ending_data == null) {
+            this.jet_data.ending_data = {};
+        }
+
+        return Object.values(this.jet_data.ending_data);
+    }
+
     exportCode2() {
 
         let f = "";
 
-        if(this.jet_data.cyoa_data != null && this.jet_data.cyoa_enabled) {
-            f += `
-campaignTrail_temp.cyoa = true;
-
-function getQuestionNumberFromPk(pk) {
-    return campaignTrail_temp.questions_json.map(q=>q.pk).indexOf(pk)-1;
-}
-
-cyoAdventure = function (a) {
-    ans = campaignTrail_temp.player_answers[campaignTrail_temp.player_answers.length-1];\n`
-
-            let events = Object.values(this.jet_data.cyoa_data);
-
-            for (let i = 0; i < events.length; i++) {
-                f += `
-    ${i > 0 ? "else " : ""}if (ans == ${events[i].answer}) {
-        campaignTrail_temp.question_number = getQuestionNumberFromPk(${events[i].question});
-    }`
-            }
-
-            if(events.length > 0) {
-                f += 
-    `\n    else {
-        return false;
-    }`
-            }
-
-            f += "\n}\n\n"
-        }
+        f += this.getCYOACode();
 
         f += ("campaignTrail_temp.questions_json = ")
         let x = JSON.stringify(Array.from(this.questions.values()), null, 4).replaceAll("â€™", "\'")
@@ -269,6 +253,8 @@ cyoAdventure = function (a) {
             f += `campaignTrail_temp.running_mate_last_name = "${this.jet_data.banner_data.runName}"\n\n`;
         }
 
+        f += this.getEndingCode();
+
         if(code) {
             f += "//#startcode";
             f += code;
@@ -276,6 +262,79 @@ cyoAdventure = function (a) {
         }
         
         return f
+    }
+
+    getEndingCode() {
+        if(this.jet_data.ending_data == null || !this.jet_data.endings_enabled) {
+            return "";
+        }
+
+        var f = "campaignTrail_temp.multiple_endings = true;\nendingPicker = (out, totv, aa, quickstats) => {\n";
+
+        const endings = this.getAllEndings();
+
+        f += 
+`
+    function setImage(url) {
+        if(url == '' || url == null) return;
+        let interval = setInterval(function () {
+            img = document.getElementsByClassName("person_image")[0];
+            if (img != null) {
+                img.src = url;
+                clearInterval(interval);
+            }
+        }, 50);
+    }
+`
+
+        for(let i = 0; i < endings.length; i++) {
+            const ending = endings[i];
+
+            f += 
+`
+    if(quickstats[${ending.variable}] ${ending.operator} ${ending.amount}) {
+        setImage("${ending.endingImage}");
+        return \`${ending.endingDescription}\`;
+    }`;
+        }
+
+        f += "\n}\n";
+
+        return f;
+    }
+
+    getCYOACode() {
+        var f = "";
+        if(this.jet_data.cyoa_data != null && this.jet_data.cyoa_enabled) {
+            f += `
+campaignTrail_temp.cyoa = true;
+
+function getQuestionNumberFromPk(pk) {
+    return campaignTrail_temp.questions_json.map(q=>q.pk).indexOf(pk)-1;
+}
+
+cyoAdventure = function (a) {
+    ans = campaignTrail_temp.player_answers[campaignTrail_temp.player_answers.length-1];\n`
+
+            let events = Object.values(this.jet_data.cyoa_data);
+
+            for (let i = 0; i < events.length; i++) {
+                f += `
+    ${i > 0 ? "else " : ""}if (ans == ${events[i].answer}) {
+        campaignTrail_temp.question_number = getQuestionNumberFromPk(${events[i].question});
+    }`
+            }
+
+            if(events.length > 0) {
+                f += 
+    `\n    else {
+        return false;
+    }`
+            }
+
+            f += "\n}\n\n"
+        }
+        return f;
     }
 }
 
@@ -359,6 +418,8 @@ function loadDataFromFile(raw_json) {
 
     const code = extractCode(raw_json);
 
+    var duplicates = false;
+
     raw_json = raw_json.replaceAll("\n", "");
     raw_json = raw_json.replaceAll("\r", "")
     raw_json = raw_json.replaceAll(/ +/g, " ");
@@ -367,7 +428,8 @@ function loadDataFromFile(raw_json) {
     states_json.forEach(state => {
 
         if(state["pk"] in states) {
-            alert(`WARNING: Found duplicate pk ${state["pk"]} in states already, make sure there are no duplicate PKs in your file before importing`)
+            console.log(`WARNING: Found duplicate pk ${state["pk"]} in states already, make sure there are no duplicate PKs in your file before importing`)
+            duplicates = true;
         }
 
         highest_pk = Math.max(highest_pk, state["pk"])
@@ -378,7 +440,8 @@ function loadDataFromFile(raw_json) {
     questions_json.forEach(question => {
 
         if(question["pk"] in questions) {
-            alert(`WARNING: Found duplicate pk ${question["pk"]} in questions already, make sure there are no duplicate PKs in your file before importing`)
+            console.log(`WARNING: Found duplicate pk ${question["pk"]} in questions already, make sure there are no duplicate PKs in your file before importing`)
+            duplicates = true;
         }
 
         highest_pk = Math.max(highest_pk, question["pk"]);
@@ -390,7 +453,8 @@ function loadDataFromFile(raw_json) {
     answers_json.forEach(answer => {
 
         if(answer["pk"] in answers) {
-            alert(`WARNING: Found duplicate pk ${answer["pk"]} in answers already, make sure there are no duplicate PKs in your file before importing`)
+            console.log(`WARNING: Found duplicate pk ${answer["pk"]} in answers already, make sure there are no duplicate PKs in your file before importing`)
+            duplicates = true;
         }
 
         highest_pk = Math.max(highest_pk, answer["pk"]);
@@ -403,7 +467,8 @@ function loadDataFromFile(raw_json) {
     answer_feedbacks_json.forEach(feedback => {
 
         if(feedback["pk"] in feedbacks) {
-            alert(`WARNING: Found duplicate pk ${feedback["pk"]} in feedbacks already, make sure there are no duplicate PKs in your file before importing`)
+            console.log(`WARNING: Found duplicate pk ${feedback["pk"]} in feedbacks already, make sure there are no duplicate PKs in your file before importing`)
+            duplicates = true;
         }
 
         highest_pk = Math.max(highest_pk, feedback["pk"]);
@@ -416,7 +481,8 @@ function loadDataFromFile(raw_json) {
     answer_score_globals_json.forEach(x => {
 
         if(x["pk"] in answer_score_globals) {
-            alert(`WARNING: Found duplicate pk ${x["pk"]} in answer_score_globals already, make sure there are no duplicate PKs in your file before importing`)
+            console.log(`WARNING: Found duplicate pk ${x["pk"]} in answer_score_globals already, make sure there are no duplicate PKs in your file before importing`)
+            duplicates = true;
         }
 
 
@@ -429,7 +495,8 @@ function loadDataFromFile(raw_json) {
     answer_score_issues_json.forEach(x => {
 
         if(x["pk"] in answer_score_issues) {
-            alert(`WARNING: Found duplicate pk ${x["pk"]} in answer_score_issues already, make sure there are no duplicate PKs in your file before importing`)
+            console.log(`WARNING: Found duplicate pk ${x["pk"]} in answer_score_issues already, make sure there are no duplicate PKs in your file before importing`)
+            duplicates = true;
         }
 
         highest_pk = Math.max(highest_pk, x["pk"]);
@@ -441,7 +508,8 @@ function loadDataFromFile(raw_json) {
     answer_score_states_json.forEach(x => {
 
         if(x["pk"] in answer_score_states) {
-            alert(`WARNING: Found duplicate pk ${x["pk"]} in answer_score_states already, make sure there are no duplicate PKs in your file before importing`)
+            console.log(`WARNING: Found duplicate pk ${x["pk"]} in answer_score_states already, make sure there are no duplicate PKs in your file before importing`)
+            duplicates = true;
         }
 
         highest_pk = Math.max(highest_pk, x["pk"]);
@@ -453,7 +521,8 @@ function loadDataFromFile(raw_json) {
     candidate_issue_scores_json.forEach(x => {
 
         if(x["pk"] in candidate_issue_scores) {
-            alert(`WARNING: Found duplicate pk ${x["pk"]} in candidate_issue_scores already, make sure there are no duplicate PKs in your file before importing`)
+            console.log(`WARNING: Found duplicate pk ${x["pk"]} in candidate_issue_scores already, make sure there are no duplicate PKs in your file before importing`)
+            duplicates = true;
         }
 
         highest_pk = Math.max(highest_pk, x["pk"]);
@@ -465,7 +534,8 @@ function loadDataFromFile(raw_json) {
     candidate_state_multipliers_json.forEach(x => {
 
         if(x["pk"] in candidate_state_multipliers) {
-            alert(`WARNING: Found duplicate pk ${x["pk"]} in candidate_state_multipliers already, make sure there are no duplicate PKs in your file before importing`)
+            console.log(`WARNING: Found duplicate pk ${x["pk"]} in candidate_state_multipliers already, make sure there are no duplicate PKs in your file before importing`)
+            duplicates = true;
         }
 
         highest_pk = Math.max(highest_pk, x["pk"]);
@@ -477,7 +547,8 @@ function loadDataFromFile(raw_json) {
     running_mate_issue_scores_json.forEach(x => {
 
         if(x["pk"] in running_mate_issue_scores) {
-            alert(`WARNING: Found duplicate pk ${x["pk"]} in running_mate_issue_scores already, make sure there are no duplicate PKs in your file before importing`)
+            console.log(`WARNING: Found duplicate pk ${x["pk"]} in running_mate_issue_scores already, make sure there are no duplicate PKs in your file before importing`)
+            duplicates = true;
         }
 
         highest_pk = Math.max(highest_pk, x["pk"]);
@@ -489,7 +560,8 @@ function loadDataFromFile(raw_json) {
     state_issue_scores_json.forEach(x => {
 
         if(x["pk"] in state_issue_scores) {
-            alert(`WARNING: Found duplicate pk ${x["pk"]} in state_issue_scores already, make sure there are no duplicate PKs in your file before importing`)
+            console.log(`WARNING: Found duplicate pk ${x["pk"]} in state_issue_scores already, make sure there are no duplicate PKs in your file before importing`)
+            duplicates = true;
         }
 
         highest_pk = Math.max(highest_pk, x["pk"]);
@@ -501,13 +573,16 @@ function loadDataFromFile(raw_json) {
     issues_json.forEach(x => {
 
         if(x["pk"] in issues) {
-            alert(`WARNING: Found duplicate pk ${x["pk"]} in issues already, make sure there are no duplicate PKs in your file before importing`)
+            console.log(`WARNING: Found duplicate pk ${x["pk"]} in issues already, make sure there are no duplicate PKs in your file before importing`)
+            duplicates = true;
         }
 
         highest_pk = Math.max(highest_pk, x["pk"]);
         key = x['pk'];
         issues[key] = x;
     });
+
+    if(duplicates) alert("WARNING: Duplicate PKs found during import process, see console for more details. Some features may not work as expected or data may be missing.")
 
     jet_data = extractJSON(raw_json, "campaignTrail_temp.jet_data = [", "]", null, null, false, [{}])[0];
 

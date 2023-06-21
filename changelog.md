@@ -1,8 +1,11 @@
 # Changelog
 
+## 1.1.7
+
+- Added ability to add (basic) custom endings/code generation. You can choose from 3 variable and 3 operators.
 ## 1.1.6
 
-- Add ability to change the lower banner image/names easily.
+- Added ability to change the lower banner image/names easily.
     - Kind of janky, need to go in and out to see image changes. But overall works.
 
 ## 1.1.5
