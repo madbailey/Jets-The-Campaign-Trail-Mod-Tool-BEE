@@ -3,6 +3,7 @@
 ## 1.1.7
 
 - Added ability to add (basic) custom endings/code generation. You can choose from 3 variable and 3 operators.
+  
 ## 1.1.6
 
 - Added ability to change the lower banner image/names easily.
