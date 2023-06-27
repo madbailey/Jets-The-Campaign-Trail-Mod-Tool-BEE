@@ -434,7 +434,9 @@ Vue.component('state-score', {
         <h1 class="font-bold">STATE SCORE PK {{this.pk}}</h1><br>
         
         <label for="state">State PK:</label><br>
-        <input @input="onInput($event)" :value="state" name="state" type="number"><br>
+        <select @change="onInput($event)" name="state">
+            <option v-for="s in states" :selected="s.pk == state" :value="s.pk" :key="s.pk">{{s.pk}} - {{s.fields.abbr}}</option>
+        </select><br>
 
         <label for="candidate">Candidate <span v-if="candidateNickname" class="italic text-gray-400">({{this.candidateNickname}})</span>:</label><br>
         <input @input="onInput($event)" :value="candidate" name="candidate" type="number"><br>
@@ -485,6 +487,10 @@ Vue.component('state-score', {
 
         state: function() {
             return Vue.prototype.$TCT.answer_score_state[this.pk].fields.state;
+        },
+
+        states: function() {
+            return Object.values(Vue.prototype.$TCT.states);
         }
     }
 })

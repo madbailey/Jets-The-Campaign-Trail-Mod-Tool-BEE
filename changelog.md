@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.1.8
+
+- Added state dropdown for state answer effects to make it easier.
+
 ## 1.1.7
 
 - Added ability to add (basic) custom endings/code generation. You can choose from 3 variable and 3 operators.
