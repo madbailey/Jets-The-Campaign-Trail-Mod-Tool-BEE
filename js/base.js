@@ -170,6 +170,55 @@ class TCTData {
         return Object.values(this.jet_data.ending_data);
     }
 
+    getFirstStatePK() {
+        return Object.values(this.states)[0].pk;
+    }
+
+    deleteState(pk) {
+        if(!pk in this.states) {
+            return;
+        }
+
+        var answerScoresToRemove = [];
+        console.log(this.answer_score_state)
+        for (const xPk in this.answer_score_state) {
+            const x = this.answer_score_state[xPk];
+            if(x.fields.state == pk) {
+                answerScoresToRemove.push(xPk);
+            }
+        }
+        for(let i = 0; i < answerScoresToRemove.length; i++) {
+            const xPk = answerScoresToRemove[i];
+            delete this.answer_score_state[xPk];
+        }
+
+        var stateScoresToRemove = [];
+        for (const xPk in this.state_issue_scores) {
+            const x = this.state_issue_scores[xPk];
+            if(x.fields.state == pk) {
+                stateScoresToRemove.push(xPk);
+            }
+        }
+        for(let i = 0; i < stateScoresToRemove.length; i++) {
+            const xPk = stateScoresToRemove[i];
+            delete this.state_issue_scores[xPk];
+        }
+        
+        var csm = [];
+        for (const xPk in this.candidate_state_multiplier) {
+            const x = this.candidate_state_multiplier[xPk];
+            if(x.fields.state == pk) {
+                csm.push(xPk);
+            }
+        }
+        for(let i = 0; i < csm.length; i++) {
+            const xPk = csm[i];
+            delete this.candidate_state_multiplier[xPk];
+        }
+
+        delete this.states[pk];
+    }
+
     exportCode2() {
 
         let f = "";

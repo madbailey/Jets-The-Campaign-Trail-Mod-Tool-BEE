@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.1.9
+
+- Added ability to delete states.
+
 ## 1.1.8
 
 - Added state dropdown for state answer effects to make it easier.

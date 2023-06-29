@@ -5,6 +5,8 @@ Vue.component('state', {
     template: `
     <div class="mx-auto bg-gray-100 p-4">
 
+    <button class="bg-red-500 text-white p-2 my-2 rounded hover:bg-red-600" v-on:click="deleteState()">Delete State</button>
+
     <h1 class="font-bold">{{stateName}} - STATE PK {{this.pk}}</h1><br>
     <label for="electoral_votes">Electoral Votes:</label><br>
     <input @input="onInput($event)" :value="electoralVotes" name="electoral_votes" type="number"><br>
@@ -29,6 +31,19 @@ Vue.component('state', {
     `,
 
     methods: {
+
+        deleteState: function() {
+
+            Vue.prototype.$TCT.deleteState(this.pk);
+            Vue.prototype.$globalData.state = Vue.prototype.$TCT.getFirstStatePK();
+
+            Vue.prototype.$globalData.mode = QUESTION;
+            Vue.prototype.$globalData.mode = STATE;
+            const temp = Vue.prototype.$globalData.filename;
+            Vue.prototype.$globalData.filename = null;
+            Vue.prototype.$globalData.filename = temp;
+        },
+
         onInput: function(evt) {
 
             let value = evt.target.value;
