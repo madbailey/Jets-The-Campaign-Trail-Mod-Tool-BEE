@@ -8,10 +8,28 @@ Vue.component('state', {
     <button class="bg-red-500 text-white p-2 my-2 rounded hover:bg-red-600" v-on:click="deleteState()">Delete State</button>
 
     <h1 class="font-bold">{{stateName}} - STATE PK {{this.pk}}</h1><br>
+
+    <label for="name">State Name:</label><br>
+    <input @input="onInput($event)" :value="stateName" name="name" type="text"><br><br>
+
+    <label for="abbr">State Abbreviation:</label><br>
+    <input @input="onInput($event)" :value="abbr" name="abbr" type="text"><br><br>
+
     <label for="electoral_votes">Electoral Votes:</label><br>
     <input @input="onInput($event)" :value="electoralVotes" name="electoral_votes" type="number"><br>
     <label for="popular_votes">Popular Votes:</label><br>
     <input @input="onInput($event)" :value="popularVotes" name="popular_votes" type="number"><br>
+
+    <label for="poll_closing_time">Poll Closing Time</label><br>
+    <input @input="onInput($event)" :value="pollClosingTime" name="poll_closing_time" type="number"><br>
+
+    <label for="winner_take_all_flg">Winner Take All Flag (0/1):</label><br>
+    <input @input="onInput($event)" :value="winnerTakeAll" name="winner_take_all_flg" type="number"><br>
+
+    <label for="election">Election PK (IMPORTANT! MAKE SURE THIS IS YOURS):</label><br>
+    <input @input="onInput($event)" :value="election" name="election" type="number"><br>
+
+    <br>
 
     <details open>
     <summary>Candidate State Multipliers ({{this.candidateStateMultipliers.length}})</summary>
@@ -52,7 +70,7 @@ Vue.component('state', {
             }
 
             Vue.prototype.$TCT.states[this.pk].fields[evt.target.name] = value;
-        }
+        },
     },
 
     computed: {
@@ -61,14 +79,30 @@ Vue.component('state', {
             return Vue.prototype.$TCT.states[this.pk].fields.name;
         },
 
+        abbr: function() {
+            return Vue.prototype.$TCT.states[this.pk].fields.abbr;
+        },
+
         electoralVotes: function () {
             return Vue.prototype.$TCT.states[this.pk].fields.electoral_votes;
-          },
+        },
   
         popularVotes: function () {
             return Vue.prototype.$TCT.states[this.pk].fields.popular_votes;
         },
 
+        pollClosingTime: function () {
+            return Vue.prototype.$TCT.states[this.pk].fields.poll_closing_time;
+        },
+  
+        winnerTakeAll: function () {
+            return Vue.prototype.$TCT.states[this.pk].fields.winner_take_all_flg;
+        },
+
+        election: function () {
+            return Vue.prototype.$TCT.states[this.pk].fields.election;
+        },
+  
         candidateStateMultipliers: function () {
             return Vue.prototype.$TCT.getCandidateStateMultipliersForState(this.pk);
         },

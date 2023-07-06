@@ -75,6 +75,7 @@ Vue.component('editor', {
         <candidate v-if="currentMode == 'CANDIDATE'" :pk="candidate"></candidate>
         <cyoa v-if="currentMode == 'CYOA'"></cyoa>
         <endings v-if="currentMode == 'ENDINGS'"></endings>
+        <mapping v-if="currentMode == 'MAPPING'"></mapping>
         <banner-settings v-if="currentMode == 'BANNER'"></banner-settings>
     </div>
     `,

@@ -262,3 +262,20 @@ Vue.component('ending-picker', {
         },
     }
 })
+
+Vue.component('mapping-picker', {
+
+    template: `
+    <div class="mx-auto p-6">
+
+    <button class="bg-gray-300 p-2 my-2 rounded hover:bg-gray-500" v-on:click="gotoMapping()">Custom Map Tools</button>
+
+    </div>
+    `,
+
+    methods: {
+        gotoMapping:function(evt) {
+            Vue.prototype.$globalData.mode = MAPPING;
+        },
+    }
+})

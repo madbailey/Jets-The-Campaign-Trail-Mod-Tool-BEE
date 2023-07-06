@@ -57,7 +57,7 @@ Vue.component('banner-settings', {
     computed: {
         enabled: function() {
             if(Vue.prototype.$TCT.jet_data.banner_enabled == null) {
-                Vue.prototype.$TCT.jet_data.cyoa_enabled = false;
+                Vue.prototype.$TCT.jet_data.banner_enabled = false;
             }
 
             if(Vue.prototype.$TCT.jet_data.banner_data == null) {

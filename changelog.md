@@ -1,5 +1,14 @@
 # Changelog
 
+## 1.2.0
+
+- Added first version of automatic custom map making from SVG import.
+    - It deletes all states and things to do with states.
+    - Reads svg paths and uses their ids as names.
+    - Creates new candidate state multipliers and state issue scores automatically.
+    - May not work with all SVGs, but confirmed to work with the few I tested.
+    - If you want you can just upload a dummy code 2 and then use the tool and still code the rest manually. It should save you time.
+
 ## 1.1.9
 
 - Added ability to delete states.
