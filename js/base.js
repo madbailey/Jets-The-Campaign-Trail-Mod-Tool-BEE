@@ -327,6 +327,12 @@ class TCTData {
 
         let f = "";
 
+        if(this.jet_data.mapping_enabled) {
+            f += "\n// Generated mapping code\n" + this.getMapCode();
+            this.jet_data.mapping_data.mapSvg = '';
+            f += "\n\n";
+        }
+
         f += this.getCYOACode();
 
         f += ("campaignTrail_temp.questions_json = ")
@@ -405,11 +411,6 @@ class TCTData {
             f += "//#startcode";
             f += code;
             f += "//#endcode"
-        }
-
-        if(this.jet_data.mapping_enabled) {
-            f += "\n// Generated mapping code\n" + this.getMapCode();
-            this.jet_data.mapping_data.mapSvg = '';
         }
 
         f += ("\n\ncampaignTrail_temp.jet_data = [")
