@@ -13,6 +13,10 @@ Vue.component('mapping', {
             <label for="mapSvg">Map SVG:</label><br>
             <textarea @input="onInput($event)" :value="mapSvg" name="mapSvg" rows="4" cols="50"></textarea><br>
 
+            <label for="electionPk">Election PK:</label><br>
+            <input @input="onInput($event)" :value="electionPk" name="electionPk" type="number"><br>
+            <p class="text-sm text-gray-700 italic">NOTE: Set this to the pk of your election so all states have this filled out automatically. Otherwise you will need to fill it in for each state yourself.</p>
+
             <button class="bg-green-500 text-white p-2 my-2 rounded hover:bg-green-600" v-on:click="loadMapFromSVG()">Load Map From SVG</button><br>
             <p class="text-sm text-gray-700 italic">WARNING: If you click this all your states and anything referencing your states will be deleted from your code 2 and replaced from what the tool gets from your SVG. You should only be doing this once when starting to make the mod.</p>
 
@@ -48,6 +52,10 @@ Vue.component('mapping', {
     },
 
     computed: {
+
+        electionPk: function() {
+            return Vue.prototype.$TCT.jet_data.mapping_data.electionPk;
+        },
 
         mapSvg: function() {
             return Vue.prototype.$TCT.jet_data.mapping_data.mapSvg;

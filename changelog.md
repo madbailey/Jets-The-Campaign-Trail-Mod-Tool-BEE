@@ -8,6 +8,7 @@
     - Creates new candidate state multipliers and state issue scores automatically.
     - May not work with all SVGs, but confirmed to work with the few I tested.
     - If you want you can just upload a dummy code 2 and then use the tool and still code the rest manually. It should save you time.
+    - If your map is weirdly sized, then resize the SVG in Inkscape or something.
 
 ## 1.1.9
 

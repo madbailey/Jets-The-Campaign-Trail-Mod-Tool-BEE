@@ -246,12 +246,14 @@ class TCTData {
 
         const paths = [...svg.match(pathsRegex)];
 
+        const electionPk = this.jet_data.mapping_data.electionPk ?? -1;
+
         for(let i = 0; i < paths.length; i++) {
             const path = paths[i];
 
             let id = path.match(idRegex)[0].split("\"")[1].replace("\"", "");
             let d = path.match(dRegex)[0].split("\"")[1].replace("\"", "");
-            let abbr = id.split(" ")[0];
+            let abbr = id.split(" ")[0].replaceAll("-", "_");
 
             const newPk = this.getNewPk();
             let x = {
@@ -264,7 +266,7 @@ class TCTData {
                     "popular_votes": 0,
                     "poll_closing_time": 120,
                     "winner_take_all_flg": 1,
-                    "election": -1,
+                    "election": electionPk,
                 },
                 "d": d
             }
