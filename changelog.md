@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.2.1
+
+- Added first version of custom map preview. You still need to click in and out to view the preview.
+
 ## 1.2.0
 
 - Added first version of automatic custom map making from SVG import.
