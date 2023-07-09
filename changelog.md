@@ -2,7 +2,7 @@
 
 ## 1.2.3
 
-- Fix map preview updating
+- Fixed map preview updating
 
 ## 1.2.2
 
