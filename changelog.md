@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.2.3
+
+- Fix map preview updating
+
 ## 1.2.2
 
 - Added ability to scale map SVGs.

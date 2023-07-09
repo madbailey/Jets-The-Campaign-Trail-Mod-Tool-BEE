@@ -2,8 +2,9 @@ Vue.component('mapping', {
 
     data() {
         return {
-            x : 925,
-            y : 595
+            mapSvg : Vue.prototype.$TCT.jet_data.mapping_data?.mapSvg ?? "",
+            x : Vue.prototype.$TCT.jet_data.mapping_data?.x ?? 925,
+            y : Vue.prototype.$TCT.jet_data.mapping_data?.y ?? 595
         };
     },
 
@@ -18,7 +19,7 @@ Vue.component('mapping', {
         <div v-if="enabled">
 
             <label for="mapSvg">Map SVG:</label><br>
-            <textarea @input="onInput($event)" :value="mapSvg" name="mapSvg" rows="4" cols="50"></textarea><br>
+            <textarea v-model="mapSvg" name="mapSvg" rows="4" cols="50"></textarea><br>
 
             <label for="electionPk">Election PK:</label><br>
             <input @input="onInput($event)" :value="electionPk" name="electionPk" type="number"><br>
@@ -37,6 +38,9 @@ Vue.component('mapping', {
 
                 <label>y:</label><br>
                 <input v-model="y" type="number"><br>
+
+                <p class="text-sm text-gray-700 italic">NOTE: Each time you exit this tab your preview will disappear if you don't press Load Map From SVG, so make sure to do all your mapping in one fell swoop.</p>
+                <br>
             </div>
         </div>
 
@@ -51,11 +55,12 @@ Vue.component('mapping', {
                 Vue.prototype.$TCT.jet_data.mapping_data = {}
             }
 
-            if(Vue.prototype.$TCT.jet_data.mapping_data.mapSvg == null) {
+            if(this.mapSvg == null) {
                 alert("There was an issue getting the SVG from the input field. Go out of this tab and go back in and try again.")
                 return;
             }
 
+            Vue.prototype.$TCT.jet_data.mapping_data.mapSvg = this.mapSvg;
             Vue.prototype.$TCT.jet_data.mapping_data.x = this.x;
             Vue.prototype.$TCT.jet_data.mapping_data.y = this.y;
 
@@ -86,10 +91,6 @@ Vue.component('mapping', {
 
         electionPk: function() {
             return Vue.prototype.$TCT.jet_data.mapping_data.electionPk;
-        },
-
-        mapSvg: function() {
-            return Vue.prototype.$TCT.jet_data.mapping_data.mapSvg;
         },
 
         enabled: function() {
