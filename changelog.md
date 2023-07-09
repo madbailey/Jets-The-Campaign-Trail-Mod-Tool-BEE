@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.2.2
+
+- Added ability to scale map SVGs.
+
 ## 1.2.1
 
 - Added first version of custom map preview. You still need to click in and out to view the preview.

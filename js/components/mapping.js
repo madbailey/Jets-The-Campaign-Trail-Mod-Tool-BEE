@@ -1,5 +1,12 @@
 Vue.component('mapping', {
 
+    data() {
+        return {
+            x : 925,
+            y : 595
+        };
+    },
+
     template: `
     <div class="mx-auto bg-gray-100 p-4">
 
@@ -20,8 +27,17 @@ Vue.component('mapping', {
             <button class="bg-green-500 text-white p-2 my-2 rounded hover:bg-green-600" v-on:click="loadMapFromSVG()">Load Map From SVG</button><br>
             <p class="text-sm text-gray-700 italic">WARNING: If you click this all your states and anything referencing your states will be deleted from your code 2 and replaced from what the tool gets from your SVG. You should only be doing this once when starting to make the mod.</p>
 
-            <map-preview v-if="mapSvg" :svg="mapSvg"></map-preview>
+            <div v-if="mapSvg">
+                <map-preview :svg="mapSvg" :x="x" :y="y"></map-preview>
 
+                <p class="text-sm text-gray-700 italic">Change the x and y values to change how big the map appears in the preview if the map isn't fitting currently.</p>
+
+                <label>x:</label><br>
+                <input v-model="x" type="number"><br>
+
+                <label>y:</label><br>
+                <input v-model="y" type="number"><br>
+            </div>
         </div>
 
     </div>
@@ -30,6 +46,19 @@ Vue.component('mapping', {
     methods: {
 
         loadMapFromSVG: function() {
+
+            if(Vue.prototype.$TCT.jet_data.mapping_data == null) {
+                Vue.prototype.$TCT.jet_data.mapping_data = {}
+            }
+
+            if(Vue.prototype.$TCT.jet_data.mapping_data.mapSvg == null) {
+                alert("There was an issue getting the SVG from the input field. Go out of this tab and go back in and try again.")
+                return;
+            }
+
+            Vue.prototype.$TCT.jet_data.mapping_data.x = this.x;
+            Vue.prototype.$TCT.jet_data.mapping_data.y = this.y;
+
             Vue.prototype.$TCT.loadMap();
             Vue.prototype.$globalData.state = Object.keys(Vue.prototype.$TCT.states)[0];
             alert("Custom map SVG loaded in. If there were any errors they are in the console. Check your states dropdown to confirm it is working.")
@@ -83,11 +112,11 @@ Vue.component('mapping', {
 
 Vue.component('map-preview', {
 
-    props: ['svg'],
+    props: ['svg', 'x', 'y'],
 
     template: `
     <div id="map_container">
-        <svg height="400.125" version="1.1" width="722.156" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" style="background-color:#BFE6FF; overflow: hidden; position: relative; left: -0.895844px; top: -0.552084px;" viewBox="0 0 925 595" preserveAspectRatio="xMinYMin">    
+        <svg height="400.125" version="1.1" width="722.156" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" style="background-color:#BFE6FF; overflow: hidden; position: relative; left: -0.895844px; top: -0.552084px;" :viewBox="viewBox" preserveAspectRatio="xMinYMin">    
             <path v-for="x in mapCode" :d="x[1]" :id="x[0]" style="-webkit-tap-highlight-color: rgba(0, 0, 0, 0);" fill="#ff9494" stroke="#000000" ></path>
         </svg>
     </div>
@@ -103,6 +132,10 @@ Vue.component('map-preview', {
 
             return Vue.prototype.$TCT.getMapForPreview(this.svg);
         },
+
+        viewBox: function() {
+            return `0 0 ${this.x ?? 925} ${this.y ?? 595}`
+        }
     }
 
 });
