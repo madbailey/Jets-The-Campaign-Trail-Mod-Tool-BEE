@@ -543,27 +543,37 @@ function extractJSON(raw_file, start, end, backup = null, backupEnd = null, requ
         f = f.replaceAll("\\\\", "\\")
     }
 
-    let raw = f.trim().split(start)[1].split(end)[0].trim()
+    let startString = f.trim().split(start)[1];
+    const possibleEndings = getAllIndexes(startString, end);
+    let foundValidJSON = false;
 
-    if(raw[0] == '"' || raw[0] == "'") {
-        raw = raw.substring(1)
-    }
-        
+    for(let i = 0; i < possibleEndings.length; i++) {
+        let raw = startString.slice(0, possibleEndings[i])
 
-    if(raw.slice(-1) == '"' || raw.slice(-1) == "'") {
-        raw = raw.substring(0, raw.length-1)
+        if(raw[0] == '"' || raw[0] == "'") {
+            raw = raw.substring(1)
+        }
+            
+        if(raw.slice(-1) == '"' || raw.slice(-1) == "'") {
+            raw = raw.substring(0, raw.length-1)
+        }
+            
+        try {
+            if( end == "]")
+                raw = "[" + raw + "]"
+            res = JSON.parse(raw)
+            foundValidJSON = true;
+            console.log("Found valid ending for " + start + "!");
+            break;
+        }
+        catch(e) {
+            console.log(`Error while parsing JSON for ${start}: ${e} going to try next ending instead`)
+        }
     }
-        
-    try {
-        if( end == "]")
-            raw = "[" + raw + "]"
-        res = JSON.parse(raw)
-    }
-    catch(e) {
-        console.log(`Ran into error parsing JSON for start [${start}]. Copying to clipboard`)
-        console.log(`"Error: ${e}`)
-        navigator.clipboard.writeText(raw);
-        return fallback
+
+    if(!foundValidJSON) {
+        console.log(`Error: Could not find a valid JSON for start ${start}`)
+        return fallback;
     }
 
     console.log(`found ${start}!`)
@@ -774,4 +784,13 @@ function loadDataFromFile(raw_json) {
     data = new TCTData(questions, answers, issues, state_issue_scores, candidate_issue_scores, running_mate_issue_scores, candidate_state_multipliers, answer_score_globals, answer_score_issues, answer_score_states, feedbacks, states, highest_pk, jet_data)
 
     return data
+}
+
+// https://stackoverflow.com/questions/20798477/how-to-find-the-indexes-of-all-occurrences-of-an-element-in-array#:~:text=The%20.,val%2C%20i%2B1))%20!%3D
+function getAllIndexes(arr, val) {
+    var indexes = [], i = -1;
+    while ((i = arr.indexOf(val, i+1)) != -1){
+        indexes.push(i);
+    }
+    return indexes;
 }

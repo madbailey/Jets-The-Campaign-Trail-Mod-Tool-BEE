@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.2.4
+
+- Fixed bug where you can't use ']' in questions
+
 ## 1.2.3
 
 - Fixed map preview updating
