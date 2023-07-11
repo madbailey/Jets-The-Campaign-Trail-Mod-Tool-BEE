@@ -152,13 +152,26 @@ Vue.component('candidate-picker', {
     <label for="candidatePicker">Candidates:</label><br>
 
     <select @click="onClick" @change="onChange($event)" name="candidatePicker" id="candidatePicker">
-        <option v-for="c in candidates" :value="c[0]" :key="c[0]">{{c[1]}}</option>
+        <option v-for="c in candidates" :selected="currentCandidate == c[0]" :value="c[0]" :key="c[0]">{{c[1]}}</option>
     </select>
+    <br>
+    <button class="bg-green-500 text-white p-2 my-2 rounded hover:bg-green-600" v-on:click="addCandidate()">Add Candidate</button>
 
     </div>
     `,
 
     methods: {
+
+        addCandidate: function() {
+            const newCandidatePk = Vue.prototype.$TCT.addCandidate();
+            Vue.prototype.$globalData.mode = CANDIDATE;
+            Vue.prototype.$globalData.candidate = newCandidatePk;
+
+            const temp = Vue.prototype.$globalData.filename;
+            Vue.prototype.$globalData.filename = "";
+            Vue.prototype.$globalData.filename = temp;
+        },
+
         onChange:function(evt) {
             Vue.prototype.$globalData.mode = CANDIDATE;
             Vue.prototype.$globalData.candidate = evt.target.value;
@@ -172,6 +185,9 @@ Vue.component('candidate-picker', {
     },
 
     computed: {
+        currentCandidate: function () {
+            return Vue.prototype.$globalData.candidate;
+        },
         candidates: function () {
           let a = [Vue.prototype.$globalData.filename];
           return getListOfCandidates();

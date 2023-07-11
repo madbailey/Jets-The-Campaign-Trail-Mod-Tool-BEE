@@ -251,6 +251,64 @@ class TCTData {
         return out;
     }
 
+    deleteCandidate(pk) {
+        const stateMultipliers = Object.keys(this.candidate_state_multiplier);
+        const issueScores = Object.keys(this.candidate_issue_score);
+
+        for(let i = 0; i < stateMultipliers.length; i++) {
+            const sPk = stateMultipliers[i];
+            if(this.candidate_state_multiplier[sPk].fields.candidate == pk) {
+                delete this.candidate_state_multiplier[sPk];
+            }
+        }
+
+        for(let i = 0; i < issueScores.length; i++) {
+            const iPk = issueScores[i];
+            if(this.candidate_issue_score[iPk].fields.candidate == pk) {
+                delete this.candidate_issue_score[iPk];
+            }
+        }
+    }
+
+    addCandidate() {
+        const candidatePk = this.getNewPk();
+
+        const s = Object.keys(this.states);
+        const issues = Object.keys(this.issues);
+
+        for(let i = 0; i < s.length; i++) {
+            const cPk = this.getNewPk();
+            // Create candidate state multipliers
+            let c = {
+                "model": "campaign_trail.candidate_state_multiplier",
+                "pk": cPk,
+                "fields": {
+                    "candidate": candidatePk,
+                    "state": s[i],
+                    "state_multiplier": 1
+                }
+            }
+            this.candidate_state_multiplier[cPk] = c;
+        }
+
+        for(let i = 0; i < issues.length; i++) {
+            const iPk = this.getNewPk();
+            // Create state issue scores
+            let iss =  {
+                "model": "campaign_trail.candidate_issue_score",
+                "pk": iPk,
+                "fields": {
+                    "candidate": candidatePk,
+                    "issue": issues[i],
+                    "issue_score": 0
+                }
+            }
+            this.candidate_issue_score[iPk] = iss;
+        }
+
+        return candidatePk;
+    }
+
     loadMap() {
 
         const cans = this.getAllCandidatePKs();

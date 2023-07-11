@@ -385,7 +385,9 @@ Vue.component('candidate', {
     template: `
     <div class="mx-auto bg-gray-100 p-4">
 
-        <h1>Candidate PK {{this.pk}} <span v-if="nickname" class="italic text-gray-400">({{this.nickname}})</span></h1><br>
+        <button class="bg-red-500 text-white p-2 my-2 rounded hover:bg-red-600" v-on:click="deleteCandidate()">Delete Candidate</button><br>
+
+        <h1 class="font-bold">Candidate PK {{this.pk}} <span v-if="nickname" class="italic text-gray-400">({{this.nickname}})</span></h1><br>
 
         <br>
         <p>A nickname will display next to a candidate's pk so you know who they are more easily!</p>
@@ -426,6 +428,15 @@ Vue.component('candidate', {
             Vue.prototype.$globalData.filename = "";
             Vue.prototype.$globalData.filename = temp;
         },
+
+        deleteCandidate: function() {
+            Vue.prototype.$TCT.deleteCandidate(this.pk);
+            Vue.prototype.$globalData.candidate = Vue.prototype.$TCT.getAllCandidatePKs()[0];
+
+            const temp = Vue.prototype.$globalData.filename;
+            Vue.prototype.$globalData.filename = "";
+            Vue.prototype.$globalData.filename = temp;
+        }
 
     },
 

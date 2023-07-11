@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.2.5
+
+- Added ability to add/delete candidates
+
+
 ## 1.2.4
 
 - Fixed bug where you can't use ']' in questions
