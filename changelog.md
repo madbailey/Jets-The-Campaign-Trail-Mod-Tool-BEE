@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.2.6
+
+- Made sure initial values for answer effects were real PKs to avoid invalid PKs.
+
 ## 1.2.5
 
 - Added ability to add/delete candidates
