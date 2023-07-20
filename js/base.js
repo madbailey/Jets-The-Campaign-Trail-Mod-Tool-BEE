@@ -543,7 +543,7 @@ class TCTData {
 `
     if(quickstats[${ending.variable}] ${ending.operator} ${ending.amount}) {
         setImage("${ending.endingImage}");
-        return \`${ending.endingDescription}\`;
+        return \`${ending.endingText}\`;
     }`;
         }
 
