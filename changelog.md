@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.2.7
+
+- Added bulk state score tool
+
 ## 1.2.6
 
 - Made sure initial values for answer effects were real PKs to avoid invalid PKs.

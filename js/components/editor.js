@@ -77,6 +77,7 @@ Vue.component('editor', {
         <endings v-if="currentMode == 'ENDINGS'"></endings>
         <mapping v-if="currentMode == 'MAPPING'"></mapping>
         <banner-settings v-if="currentMode == 'BANNER'"></banner-settings>
+        <bulk v-if="currentMode == 'BULK'"></bulk>
     </div>
     `,
 

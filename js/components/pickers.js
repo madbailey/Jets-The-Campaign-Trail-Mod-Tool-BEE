@@ -295,3 +295,20 @@ Vue.component('mapping-picker', {
         },
     }
 })
+
+Vue.component('bulk-picker', {
+
+    template: `
+    <div class="mx-auto p-6">
+
+    <button class="bg-gray-300 p-2 my-2 rounded hover:bg-gray-500" v-on:click="gotoBulk()">Bulk Tools</button>
+
+    </div>
+    `,
+
+    methods: {
+        gotoBulk:function(evt) {
+            Vue.prototype.$globalData.mode = BULK;
+        },
+    }
+})

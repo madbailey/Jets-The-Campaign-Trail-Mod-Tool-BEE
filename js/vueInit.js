@@ -8,6 +8,7 @@ const CYOA = "CYOA";
 const BANNER = "BANNER";
 const ENDINGS = "ENDINGS";
 const MAPPING = "MAPPING";
+const BULK = "BULK";
 
 function shouldBeSavedAsNumber(value) {
     return !isNaN(value) && !(value != "0" && Number(value) == 0);
