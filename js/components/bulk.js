@@ -25,6 +25,8 @@ Vue.component('bulk', {
 
         <button class="bg-gray-300 p-2 my-2 rounded hover:bg-gray-500" v-on:click="checkAll()">Check All</button>
         <br>
+        <button class="bg-gray-300 p-2 my-2 rounded hover:bg-gray-500" v-on:click="invertAll()">Invert All Values</button>
+        <br>
         
         <ul>
             <bulk-state v-for="state in states" :pk="state.pk" :key="state.pk" :stateObject="state"></bulk-state>
@@ -84,6 +86,16 @@ Vue.component('bulk', {
                 const score = stateScores[i];
                 const data = score.__vue__._data;
                 data.include = true;
+            }
+        },
+
+        
+        invertAll: function() {
+            const stateScores = document.getElementsByClassName("bulkStateScore");
+            for(let i = 0; i < stateScores.length; i++) {
+                const score = stateScores[i];
+                const data = score.__vue__._data;
+                data.amount *= -1;
             }
         }
     },
