@@ -23,6 +23,9 @@ Vue.component('bulk', {
         <label for="name">Affected Candidate PK:</label><br>
         <input v-model="affectedCandidate" name="name" type="number"><br><br>
 
+        <button class="bg-gray-300 p-2 my-2 rounded hover:bg-gray-500" v-on:click="checkAll()">Check All</button>
+        <br>
+        
         <ul>
             <bulk-state v-for="state in states" :pk="state.pk" :key="state.pk" :stateObject="state"></bulk-state>
         </ul>
@@ -73,6 +76,15 @@ Vue.component('bulk', {
             }
 
             alert("Bulk generated state scores for answer with PK " + this.answerPk + " (do not submit again)");
+        },
+
+        checkAll: function() {
+            const stateScores = document.getElementsByClassName("bulkStateScore");
+            for(let i = 0; i < stateScores.length; i++) {
+                const score = stateScores[i];
+                const data = score.__vue__._data;
+                data.include = true;
+            }
         }
     },
 
