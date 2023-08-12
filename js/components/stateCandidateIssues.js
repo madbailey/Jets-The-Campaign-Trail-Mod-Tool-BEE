@@ -226,6 +226,9 @@ Vue.component('issue', {
         <label for="name">Issue Name</label><br>
         <input @input="onInputUpdatePicker($event)" :value="name" name="name" type="text"><br><br>
 
+        <label for="name">Issue Description (Optional)</label><br>
+        <textarea @input="onInput2($event)" :value="description" name="description" type="text"></textarea><br><br>
+
         <h1>Stances</h1><br>
         <stance v-for="n in 7" :key="n" :pk="pk" :n="n"></stance>
 
@@ -258,6 +261,10 @@ Vue.component('issue', {
             Vue.prototype.$TCT.issues[this.pk].fields[evt.target.name] = value;
         },
 
+        onInput2: function(evt) {
+            Vue.prototype.$TCT.issues[this.pk].fields.description = evt.target.value;
+        },
+
         onInputUpdatePicker: function(evt) {
             Vue.prototype.$TCT.issues[this.pk].fields[evt.target.name] = evt.target.value;
             const temp = Vue.prototype.$globalData.filename;
@@ -272,13 +279,19 @@ Vue.component('issue', {
             return Vue.prototype.$TCT.issues[this.pk].fields.name;
         },
 
+        description: function() {
+            if(Vue.prototype.$TCT.issues[this.pk].fields.description == null || Vue.prototype.$TCT.issues[this.pk].fields.description == "'") {
+                Vue.prototype.$TCT.issues[this.pk].fields.description = "";
+            }
+            return Vue.prototype.$TCT.issues[this.pk].fields.description;
+        },
+
         candidateIssueScores: function() {
             return Vue.prototype.$TCT.getCandidateIssueScoreForIssue(this.pk);
         },
 
         runningMateIssueScores: function() {
             return Vue.prototype.$TCT.getRunningMateIssueScoreForIssue(this.pk);
-            
         },
     }
 })
@@ -292,6 +305,8 @@ Vue.component('stance', {
 
         <label>Stance {{n}}</label><br>
         <input @input="onInput($event)" :value="stance" name="stance" type="text"></input><br>
+        <label>Stance {{n}} Description (Optional)</label><br>
+        <textarea @input="onInput2($event)" :value="stance_desc" name="stance_desc" type="text"></textarea><br>
     </div>
     `,
 
@@ -301,12 +316,23 @@ Vue.component('stance', {
             Vue.prototype.$TCT.issues[this.pk].fields["stance_" + this.n] = evt.target.value;
         },
 
+        onInput2: function(evt) {
+            Vue.prototype.$TCT.issues[this.pk].fields["stance_desc_" + this.n] = evt.target.value;
+        },
+
     },
 
     computed: {
         stance: function () {
           return Vue.prototype.$TCT.issues[this.pk].fields["stance_" + this.n];
         },
+
+        stance_desc: function () {
+            if(Vue.prototype.$TCT.issues[this.pk].fields["stance_desc_" + this.n] == null || Vue.prototype.$TCT.issues[this.pk].fields["stance_desc_" + this.n] == "'") {
+                Vue.prototype.$TCT.issues[this.pk].fields["stance_desc_" + this.n] = "";
+            }
+            return Vue.prototype.$TCT.issues[this.pk].fields["stance_desc_" + this.n];
+          },
     }
 })
 

@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.2.8
+
+- Added issue and issue stance description support.
+
 ## 1.2.7
 
 - Added bulk state score tool
