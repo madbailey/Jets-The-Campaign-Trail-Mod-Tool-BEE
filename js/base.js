@@ -113,6 +113,10 @@ class TCTData {
     getIssueScoreForState(pk) {
         return Object.values(this.state_issue_scores).filter(x => x.fields.state == pk);
     }
+
+    getStateIssueScoresForIssue(pk) {
+        return Object.values(this.state_issue_scores).filter(x => x.fields.issue == pk);
+    }
     
     getIssueScoreForCandidate(pk) {
         return Object.values(this.candidate_issue_score).filter(x => x.fields.candidate == pk);
