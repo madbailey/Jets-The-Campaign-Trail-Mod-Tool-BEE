@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.2.9
+
+- Added ability to change all state issue scores for an issue from the issue screen.
+
 ## 1.2.8
 
 - Added issue and issue stance description support.
