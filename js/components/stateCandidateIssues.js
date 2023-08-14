@@ -161,16 +161,18 @@ Vue.component('candidate-state-multiplier', {
 
 Vue.component('state-issue-score', {
 
-    props: ['pk'],
+    props: ['pk', 'hideIssuePK'],
 
     template: `
     <li class="mx-auto bg-gray-100 p-4">
-        <h1 class="font-bold">STATE ISSUE SCORE PK {{this.pk}}</h1><br>
+        <h1 class="font-bold">STATE ISSUE SCORE PK {{this.pk}} <span v-if="hideIssuePK">({{this.stateName}})</span></h1><br>
         
+        <div v-if="!hideIssuePK">
         <label for="issue">Issue PK</label><br>
         <select @change="onInput($event)" name="issue">
             <option v-for="issue in issues" :selected="issue.pk == currentIssue" :value="issue.pk" :key="issue.pk">{{issue.pk}} - {{issue.fields.name}}</option>
         </select><br>
+        </div>
     
         <label for="state_issue_score">State Issue Score</label><br>
         <input @input="onInput($event)" :value="stateIssueScore" name="state_issue_score" type="number"><br>
@@ -202,6 +204,11 @@ Vue.component('state-issue-score', {
 
         currentIssue: function () {
             return Vue.prototype.$TCT.state_issue_scores[this.pk].fields.issue;
+        },
+
+        stateName: function() {
+            const statePK = Vue.prototype.$TCT.state_issue_scores[this.pk].fields.state;
+            return Vue.prototype.$TCT.states[statePK].fields.name;
         },
 
         stateIssueScore : function () {
@@ -243,6 +250,13 @@ Vue.component('issue', {
         <summary>Running Mate Issue Scores ({{this.runningMateIssueScores.length}})</summary>
         <ul>
             <candidate-issue-score isRunning="true" v-for="c in runningMateIssueScores" :pk="c.pk" :key="c.pk"></candidate-issue-score>
+        </ul>
+        </details>
+
+        <details open>
+        <summary>State Issue Scores For This Issue</summary>
+        <ul>
+            <state-issue-score :hideIssuePK = "true" v-for="c in stateIssueScores" :pk="c.pk" :key="c.pk"></state-issue-score>
         </ul>
         </details>
 
@@ -293,6 +307,10 @@ Vue.component('issue', {
         runningMateIssueScores: function() {
             return Vue.prototype.$TCT.getRunningMateIssueScoreForIssue(this.pk);
         },
+
+        stateIssueScores: function() {
+            return Vue.prototype.$TCT.getStateIssueScoresForIssue(this.pk);
+        }
     }
 })
 
