@@ -178,6 +178,14 @@ class TCTData {
         return Object.values(this.states)[0].pk;
     }
 
+    getFirstCandidatePK() {
+        return this.getAllCandidatePKs()[0];
+    }
+
+    getFirstIssuePK() {
+        return Object.keys(this.issues)[0];
+    }
+
     deleteState(pk) {
         if(!pk in this.states) {
             return;
@@ -539,7 +547,7 @@ class TCTData {
 `
     if(quickstats[${ending.variable}] ${ending.operator} ${ending.amount}) {
         setImage("${ending.endingImage}");
-        return \`${ending.endingDescription}\`;
+        return \`${ending.endingText}\`;
     }`;
         }
 

@@ -173,7 +173,7 @@ Vue.component('answer', {
                 "pk": newPk,
                 "fields": {
                     "answer": this.pk,
-                    "candidate": 0,
+                    "candidate": Vue.prototype.$TCT.getFirstCandidatePK(),
                     "answer_feedback": "put feedback here, don't forget to change candidate"
                 }
             }
@@ -188,8 +188,8 @@ Vue.component('answer', {
                 "pk": newPk,
                 "fields": {
                     "answer": this.pk,
-                    "candidate": 0,
-                    "affected_candidate": 0,
+                    "candidate": Vue.prototype.$TCT.getFirstCandidatePK(),
+                    "affected_candidate": Vue.prototype.$TCT.getFirstCandidatePK(),
                     "global_multiplier": 0
                 }
             }
@@ -204,7 +204,7 @@ Vue.component('answer', {
                 "pk": newPk,
                 "fields": {
                     "answer": this.pk,
-                    "issue": 0,
+                    "issue": Vue.prototype.$TCT.getFirstIssuePK(),
                     "issue_score": 0,
                     "issue_importance": 0
                 }
@@ -220,9 +220,9 @@ Vue.component('answer', {
                 "pk": newPk,
                 "fields": {
                     "answer": this.pk,
-                    "state": 0,
-                    "candidate": 0,
-                    "affected_candidate": 0,
+                    "state": Vue.prototype.$TCT.getFirstStatePK(),
+                    "candidate": Vue.prototype.$TCT.getFirstCandidatePK(),
+                    "affected_candidate": Vue.prototype.$TCT.getFirstCandidatePK(),
                     "state_multiplier": 0
                 }
             }

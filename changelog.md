@@ -1,5 +1,17 @@
 # Changelog
 
+## 1.2.8
+
+- Added issue and issue stance description support.
+
+## 1.2.7
+
+- Added bulk state score tool
+
+## 1.2.6
+
+- Made sure initial values for answer effects were real PKs to avoid invalid PKs.
+
 ## 1.2.5
 
 - Added ability to add/delete candidates
