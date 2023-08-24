@@ -4,14 +4,17 @@ Vue.component('bulk', {
         return {
             answerPk : "",
             candidate: "",
-            affectedCandidate: ""
+            affectedCandidate: "",
+            issuePk: Object.keys(Vue.prototype.$TCT.issues)[0],
+            stateIssueScore : "",
+            issueWeight : ""
         };
     },
 
     template: `
     <div class="mx-auto bg-gray-100 p-4">
 
-    <details open>
+    <details>
     <summary class="font-bold">Bulk State Answer Score Utility</summary>
 
         <label for="name">Answer PK:</label><br>
@@ -35,10 +38,41 @@ Vue.component('bulk', {
         <button class="bg-green-500 text-white p-2 my-2 rounded hover:bg-green-600" v-on:click="generate()">Generate State Scores</button>
 
     </details>
+
+    <details>
+    <summary class="font-bold">Bulk State Issue Score Utility</summary>
+
+        <label for="issue">Issue:</label><br>
+        <select @change="setIssuePk($event)" name="issue">
+            <option v-for="issue in issues" :selected="issue.pk == issuePk" :value="issue.pk" :key="issue.pk">{{issue.pk}} - {{issue.fields.name}}</option>
+        </select><br>
+
+        <label for="name">State Issue Score:</label><br>
+        <input v-model="stateIssueScore" name="name" type="number"><br><br>
+
+        <label for="name">Issue Weight:</label><br>
+        <input v-model="issueWeight" name="name" type="number"><br><br>
+
+        <button class="bg-gray-300 p-2 my-2 rounded hover:bg-gray-500" v-on:click="checkAllIssues()">Check All</button>
+        <button class="bg-gray-300 p-2 my-2 rounded hover:bg-gray-500" v-on:click="uncheckAllIssues()">Uncheck All</button>
+        <br>
+        
+        <ul>
+            <bulk-issue v-for="stateIssueScore in stateIssueScores" :pk="stateIssueScore.pk" :key="stateIssueScore.pk" :issueScoreObject="stateIssueScore"></bulk-issue>
+        </ul>
+
+        <button class="bg-green-500 text-white p-2 my-2 rounded hover:bg-green-600" v-on:click="setIssueScores()">Set Issue Scores</button>
+
+    </details>
+
     </div>
     `,
 
     methods: {
+
+        setIssuePk: function(evt) {
+            this.issuePk = evt.target.value;
+        },
         onInput: function(evt) {
 
             let value = evt.target.value;
@@ -80,6 +114,43 @@ Vue.component('bulk', {
             alert("Bulk generated state scores for answer with PK " + this.answerPk + " (do not submit again)");
         },
 
+        setIssueScores: function() {
+            const issueScores = document.getElementsByClassName("bulkStateIssue");
+            for(let i = 0; i < issueScores.length; i++) {
+                const score = issueScores[i];
+                const data = score.__vue__._data;
+
+                const pk = Number(score.__vue__._props.pk);
+                const include = data.include;
+
+                if(include) {
+                    Vue.prototype.$TCT.state_issue_scores[pk].fields.state_issue_score = Number(this.stateIssueScore);
+                    Vue.prototype.$TCT.state_issue_scores[pk].fields.weight = Number(this.issueWeight);
+                }
+                        
+            }
+
+            alert("Set issue scores!")
+        },
+
+        checkAllIssues: function() {
+            const issueScores = document.getElementsByClassName("bulkStateIssue");
+            for(let i = 0; i < issueScores.length; i++) {
+                const score = issueScores[i];
+                const data = score.__vue__._data;
+                data.include = true;
+            }
+        },
+
+        uncheckAllIssues: function() {
+            const issueScores = document.getElementsByClassName("bulkStateIssue");
+            for(let i = 0; i < issueScores.length; i++) {
+                const score = issueScores[i];
+                const data = score.__vue__._data;
+                data.include = false;
+            }
+        },
+
         checkAll: function() {
             const stateScores = document.getElementsByClassName("bulkStateScore");
             for(let i = 0; i < stateScores.length; i++) {
@@ -101,9 +172,16 @@ Vue.component('bulk', {
     },
 
     computed: {
+        issues: function () {
+            return Object.values(Vue.prototype.$TCT.issues);
+        },
 
         states: function () {
             return Object.values(Vue.prototype.$TCT.states);
+        },
+
+        stateIssueScores: function() {
+            return Object.values(Vue.prototype.$TCT.state_issue_scores).filter((x) => x.fields.issue == this.issuePk)
         }
     }
 });
@@ -127,19 +205,31 @@ Vue.component('bulk-state', {
     </li>
     `,
 
-    methods: {
-        onInput: function(evt) {
-
-            let value = evt.target.value;
-            if(shouldBeSavedAsNumber(value)) {
-                value = Number(value);
-            }
-
-            Vue.prototype.$TCT.states[this.pk].fields[evt.target.name] = value;
-        },
-    },
-
     computed: {
 
+    }
+});
+
+Vue.component('bulk-issue', {
+
+    data() {
+        return {
+            include : false,
+        };
+    },
+
+    props: ['pk', 'issueScoreObject'],
+
+    template: `
+    <li class="bulkStateIssue">
+    <input type="checkbox" v-model="include">
+    {{stateName}}
+    </li>
+    `,
+
+    computed: {
+        stateName: function() {
+            return Vue.prototype.$TCT.states[this.issueScoreObject.fields.state].fields.name;
+        }
     }
 });

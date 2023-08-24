@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.3.0
+
+- Added bulk issue score changing for one value in bulk tools
+
 ## 1.2.9
 
 - Added ability to change all state issue scores for an issue from the issue screen.
