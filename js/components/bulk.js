@@ -7,7 +7,9 @@ Vue.component('bulk', {
             affectedCandidate: "",
             issuePk: Object.keys(Vue.prototype.$TCT.issues)[0],
             stateIssueScore : "",
-            issueWeight : ""
+            issueWeight : "",
+            bulkCandidatePk : Vue.prototype.$TCT.getAllCandidatePKs()[0],
+            stateMultiplier : ""
         };
     },
 
@@ -65,10 +67,37 @@ Vue.component('bulk', {
 
     </details>
 
+    <details>
+    <summary class="font-bold">Bulk Candidate State Multiplier Utility</summary>
+
+        <label for="bulkCandidatePk">Candidate PK:</label><br>
+        <select @change="setCandidatePk($event)" name="issue">
+            <option v-for="candidate in candidates" :selected="candidate.pk == bulkCandidatePk" :value="candidate.pk" :key="candidate.pk">{{candidate.pk}} {{candidate.nickname}}</option>
+        </select><br>
+
+        <label for="stateMultiplier">State Multiplier:</label><br>
+        <input v-model="stateMultiplier" name="stateMultiplier" type="number"><br><br>
+
+        <button class="bg-gray-300 p-2 my-2 rounded hover:bg-gray-500" v-on:click="checkAllStates()">Check All</button>
+        <button class="bg-gray-300 p-2 my-2 rounded hover:bg-gray-500" v-on:click="uncheckAllStates()">Uncheck All</button>
+        <br>
+        
+        <ul>
+            <bulk-state-multiplier v-for="stateMultiplier in stateMultipliers" :pk="stateMultiplier.pk" :key="stateMultiplier.pk" :stateMultiplierObject="stateMultiplier"></bulk-state-multiplier>
+        </ul>
+
+        <button class="bg-green-500 text-white p-2 my-2 rounded hover:bg-green-600" v-on:click="setStateMultipliers()">Set State Multipliers</button>
+
+    </details>
+
     </div>
     `,
 
     methods: {
+
+        setCandidatePk: function(evt) {
+            this.bulkCandidatePk = evt.target.value;
+        },
 
         setIssuePk: function(evt) {
             this.issuePk = evt.target.value;
@@ -133,6 +162,42 @@ Vue.component('bulk', {
             alert("Set issue scores!")
         },
 
+        setStateMultipliers: function() {
+            const stateMultipliers = document.getElementsByClassName("bulkStateMultiplier");
+            for(let i = 0; i < stateMultipliers.length; i++) {
+                const score = stateMultipliers[i];
+                const data = score.__vue__._data;
+
+                const pk = Number(score.__vue__._props.pk);
+                const include = data.include;
+
+                if(include) {
+                    Vue.prototype.$TCT.candidate_state_multiplier[pk].fields.state_multiplier = Number(this.stateMultiplier);
+                }
+                        
+            }
+
+            alert("Set state multipliers!")
+        },
+
+        checkAllStates: function() {
+            const issueScores = document.getElementsByClassName("bulkStateMultiplier");
+            for(let i = 0; i < issueScores.length; i++) {
+                const score = issueScores[i];
+                const data = score.__vue__._data;
+                data.include = true;
+            }
+        },
+
+        uncheckAllStates: function() {
+            const issueScores = document.getElementsByClassName("bulkStateMultiplier");
+            for(let i = 0; i < issueScores.length; i++) {
+                const score = issueScores[i];
+                const data = score.__vue__._data;
+                data.include = false;
+            }
+        },
+
         checkAllIssues: function() {
             const issueScores = document.getElementsByClassName("bulkStateIssue");
             for(let i = 0; i < issueScores.length; i++) {
@@ -172,6 +237,18 @@ Vue.component('bulk', {
     },
 
     computed: {
+
+        candidates: function() {
+            return Vue.prototype.$TCT.getAllCandidatePKs().map((x) => {
+                let nickname = Vue.prototype.$TCT.getNicknameForCandidate(x);
+                if(nickname) nickname = " (" + nickname + ")"
+                return {
+                    pk: x,
+                    nickname: nickname
+                }
+            });
+        },
+
         issues: function () {
             return Object.values(Vue.prototype.$TCT.issues);
         },
@@ -182,6 +259,10 @@ Vue.component('bulk', {
 
         stateIssueScores: function() {
             return Object.values(Vue.prototype.$TCT.state_issue_scores).filter((x) => x.fields.issue == this.issuePk)
+        },
+
+        stateMultipliers: function() {
+            return Object.values(Vue.prototype.$TCT.candidate_state_multiplier).filter((x) => x.fields.candidate == this.bulkCandidatePk)
         }
     }
 });
@@ -230,6 +311,31 @@ Vue.component('bulk-issue', {
     computed: {
         stateName: function() {
             return Vue.prototype.$TCT.states[this.issueScoreObject.fields.state].fields.name;
+        }
+    }
+});
+
+
+Vue.component('bulk-state-multiplier', {
+
+    data() {
+        return {
+            include : false,
+        };
+    },
+
+    props: ['pk', 'stateMultiplierObject'],
+
+    template: `
+    <li class="bulkStateMultiplier">
+    <input type="checkbox" v-model="include">
+    {{stateName}}
+    </li>
+    `,
+
+    computed: {
+        stateName: function() {
+            return Vue.prototype.$TCT.states[this.stateMultiplierObject.fields.state].fields.name;
         }
     }
 });

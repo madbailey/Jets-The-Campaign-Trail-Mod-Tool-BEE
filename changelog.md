@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.3.1
+
+- Added bulk state multipliers tool
+
 ## 1.3.0
 
 - Added bulk issue score changing for one value in bulk tools
