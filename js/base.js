@@ -509,6 +509,8 @@ class TCTData {
 
         f += ("\n\ncampaignTrail_temp.jet_data = [")
         x = JSON.stringify(this.jet_data, null, 4)
+
+        this.jet_data.code_to_add = code;
         
         f += (x)
         f += "\n]"
