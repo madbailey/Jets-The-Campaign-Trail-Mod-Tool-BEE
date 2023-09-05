@@ -1,1 +1,1 @@
-loadData(TEMPLATE_NAMES[0]);
+loadData(TEMPLATE_NAMES[0], true);

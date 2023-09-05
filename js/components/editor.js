@@ -1,15 +1,35 @@
 Vue.component('toolbar', {
+
+    data() {
+        return {
+            localAutosaveEnabled : autosaveEnabled,
+        };
+    },
     template: `
-    <div class="flex mx-auto p-4">
-    <input type="file" id="file" style="display:none;" @change="fileUploaded($event)"></input>
-    <button class="bg-gray-300 p-2 m-2 rounded hover:bg-gray-500" v-on:click="importCode2()">Import Code 2</button>
-    <button class="bg-gray-300 p-2 m-2 rounded hover:bg-gray-500" v-on:click="exportCode2()">Export Code 2</button>
-    <button class="bg-gray-300 p-2 m-2 rounded hover:bg-gray-500" v-on:click="clipboardCode2()">Copy to Clipboard</button>
-    <br>
+    <div class="flex flex-wrap mx-auto p-4">
+        <input type="file" id="file" style="display:none;" @change="fileUploaded($event)"></input>
+        <button class="bg-gray-300 p-2 m-2 rounded hover:bg-gray-500" v-on:click="importCode2()">Import Code 2</button>
+        <button class="bg-gray-300 p-2 m-2 rounded hover:bg-gray-500" v-on:click="exportCode2()">Export Code 2</button>
+        <button class="bg-gray-300 p-2 m-2 rounded hover:bg-gray-500" v-on:click="clipboardCode2()">Copy to Clipboard</button>
+        <button class="bg-gray-300 p-2 m-2 rounded hover:bg-gray-500" v-on:click="toggleAutosave()">{{localAutosaveEnabled ? "Disable Autosave" : "Enable Autosave"}}</button>
     </div>
     `,
 
     methods: {
+
+        toggleAutosave : function(evt) {
+            if(!autosaveEnabled) {
+                localStorage.setItem("autosaveEnabled", "true");
+                startAutosave();
+            }
+            else {
+                localStorage.setItem("autosaveEnabled", "false");
+                clearInterval(autosaveFunction);
+            }
+
+            autosaveEnabled = localStorage.getItem("autosaveEnabled") == "true";
+            this.localAutosaveEnabled = autosaveEnabled;
+        },
 
         fileUploaded: function(evt) {
             const file = evt.target.files[0];

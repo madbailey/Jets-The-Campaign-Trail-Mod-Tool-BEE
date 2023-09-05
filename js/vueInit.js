@@ -1,5 +1,13 @@
 let app;
 
+let autosaveEnabled = localStorage.getItem("autosaveEnabled") == "true";
+const autosave = localStorage.getItem("autosave");
+let autosaveFunction = null;
+
+if(autosaveEnabled) {
+    startAutosave();
+}
+
 const QUESTION = "QUESTION";
 const STATE = "STATE";
 const ISSUE = "ISSUE";
@@ -14,12 +22,25 @@ function shouldBeSavedAsNumber(value) {
     return !isNaN(value) && !(value != "0" && Number(value) == 0);
 }
 
-async function loadData(dataName) {
+function startAutosave() {
+    autosaveFunction = setInterval(saveAutosave, 15000);
+}
+
+function saveAutosave() {
+    localStorage.setItem("autosave", Vue.prototype.$TCT.exportCode2());
+}
+
+async function loadData(dataName, isFirstLoad) {
     let mode = QUESTION;
     let raw;
 
-    let f = await fetch(`./public/${dataName}`, {mode: "no-cors"});
-    raw = await f.text();
+    if(!isFirstLoad || !autosaveEnabled || !autosave) {
+        let f = await fetch(`./public/${dataName}`, {mode: "no-cors"});
+        raw = await f.text();
+    } else {
+        raw = autosave;
+    }
+    
 
     if(raw == null) {
         alert(`Loaded file ./public/${dataName} was null. Not loading.`)
