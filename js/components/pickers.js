@@ -10,6 +10,7 @@ Vue.component('question-picker', {
     </select><br>
 
     <button class="bg-green-500 text-white p-2 my-2 rounded hover:bg-green-600" v-on:click="addQuestion()">Add Question</button>
+    <button class="bg-blue-500 text-white p-2 my-2 rounded hover:bg-blue-600" v-on:click="cloneQuestion()">Clone Question</button>
 
     <p class="text-sm text-gray-700 italic">WARNING: When adding and deleting questions, remember that your code 1 needs to have the same number of questions as in your code 2!</p>
 
@@ -39,6 +40,17 @@ Vue.component('question-picker', {
 
             Vue.prototype.$globalData.mode = QUESTION;
             Vue.prototype.$globalData.question = newPk;
+        },
+
+        cloneQuestion: function() {
+            const newQuestion = Vue.prototype.$TCT.cloneQuestion(Vue.prototype.$globalData.question);
+            
+            const temp = Vue.prototype.$globalData.filename;
+            Vue.prototype.$globalData.filename = "";
+            Vue.prototype.$globalData.filename = temp;
+
+            Vue.prototype.$globalData.mode = QUESTION;
+            Vue.prototype.$globalData.question = newQuestion.pk;
         },
 
         questionDescription:function(question) {

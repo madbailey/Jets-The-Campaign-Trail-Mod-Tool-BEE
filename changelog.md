@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.3.3
+
+- Added button to clone questions easily. Clones answers, feedback, etc.
+
 ## 1.3.2
 
 - Added option to autosave every 15 seconds. When autosave is on everytime you reload the page it will try to reload the last autosave you have.

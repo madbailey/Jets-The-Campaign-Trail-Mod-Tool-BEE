@@ -84,6 +84,123 @@ class TCTData {
         }
     }
 
+    cloneQuestion(pk) {
+        pk = Number(pk);
+        let toClone = this.questions.get(pk)
+        let answers = this.getAnswersForQuestion(pk);
+
+        let newPk = this.getNewPk();
+        let question = {
+            "model": "campaign_trail.question",
+            "pk": newPk,
+            "fields": {
+                "priority": toClone.fields.priority,
+                "description": toClone.fields.description,
+                "likelihood": toClone.fields.likelihood
+            }
+        }
+
+        for(let i = 0; i < answers.length; i++) {
+            this.cloneAnswer(answers[i], newPk);
+        }
+
+        this.questions.set(newPk, question);
+        return question;
+    }
+
+    cloneAnswer(toClone, newQuestionPk) {
+        let newPk = this.getNewPk();
+        let answer = {
+            "model": "campaign_trail.answer",
+            "pk": newPk,
+            "fields": {
+                "question": newQuestionPk,
+                "description": toClone.fields.description
+            }
+        }
+        this.answers[newPk] = answer;
+
+        const feedbacks = this.getAdvisorFeedbackForAnswer(toClone.pk);
+        for(let i = 0; i < feedbacks.length; i++) {
+            this.cloneFeedback(feedbacks[i], newPk);
+        }
+        
+        const globals = this.getGlobalScoreForAnswer(toClone.pk);
+        for(let i = 0; i < globals.length; i++) {
+            this.cloneGlobalScore(globals[i], newPk);
+        }
+
+        const issueScores = this.getIssueScoreForAnswer(toClone.pk);
+        for(let i = 0; i < issueScores.length; i++) {
+            this.cloneIssueScore(issueScores[i], newPk);
+        }
+
+        const stateScores = this.getStateScoreForAnswer(toClone.pk);
+        for(let i = 0; i < stateScores.length; i++) {
+            this.cloneStateScore(stateScores[i], newPk);
+        }
+    }
+
+    cloneFeedback(toClone, newAnswerPk) {
+        let newPk = this.getNewPk();
+        const feedback = {
+            "model": "campaign_trail.answer_feedback",
+            "pk": newPk,
+            "fields": {
+                "answer": newAnswerPk,
+                "candidate": toClone.fields.candidate,
+                "answer_feedback": toClone.fields.answer_feedback
+            }
+        }
+        this.answer_feedback[newPk] = feedback;
+    }
+
+    cloneGlobalScore(toClone, newAnswerPk) {
+        let newPk = this.getNewPk();
+        const globalScore = {
+            "model": "campaign_trail.answer_score_global",
+            "pk": newPk,
+            "fields": {
+                "answer": newAnswerPk,
+                "candidate": toClone.fields.candidate,
+                "affected_candidate": toClone.fields.affected_candidate,
+                "global_multiplier": toClone.fields.global_multiplier
+            }
+        }
+        this.answer_score_global[newPk] = globalScore;
+    }
+
+    cloneIssueScore(toClone, newAnswerPk) {
+        let newPk = this.getNewPk();
+        const issueScore = {
+            "model": "campaign_trail.answer_score_issue",
+            "pk": newPk,
+            "fields": {
+                "answer": newAnswerPk,
+                "issue": toClone.fields.issue,
+                "issue_score": toClone.fields.issue_score,
+                "issue_importance": toClone.fields.issue_importance
+            }
+        }
+        this.answer_score_issue[newPk] = issueScore;
+    }
+
+    cloneStateScore(toClone, newAnswerPk) {
+        let newPk = this.getNewPk();
+        const stateScore = {
+            "model": "campaign_trail.answer_score_state",
+            "pk": newPk,
+            "fields": {
+                "answer": newAnswerPk,
+                "state": toClone.fields.state,
+                "candidate": toClone.fields.candidate,
+                "affected_candidate": toClone.fields.affected_candidate,
+                "state_multiplier": toClone.fields.state_multiplier
+            }
+        }
+        this.answer_score_state[newPk] = stateScore;
+    }
+
     getNewPk() {
         const pk = this.highest_pk + 1
         this.highest_pk = pk
