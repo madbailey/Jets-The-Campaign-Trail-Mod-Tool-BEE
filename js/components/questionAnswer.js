@@ -386,7 +386,9 @@ Vue.component('issue-score', {
         <h1 class="font-bold">ISSUE SCORE PK {{this.pk}}</h1><br>
         
         <label for="issue">Issue PK:</label><br>
-        <input @input="onInput($event)" :value="issue" name="issue" type="number"><br>
+        <select @change="onInput($event)" name="issue">
+            <option v-for="i in issues" :selected="i.pk == issue" :value="i.pk" :key="i.pk">{{i.pk}} - {{i.fields.name}}</option>
+        </select><br>
 
         <label for="issue_score">Issue Score:</label><br>
         <input @input="onInput($event)" :value="issueScore" name="issue_score" type="number"><br>
@@ -411,6 +413,11 @@ Vue.component('issue-score', {
     },
 
     computed: {
+
+        issues: function() {
+            return Object.values(Vue.prototype.$TCT.issues);
+        },
+
         issue: function () {
           return Vue.prototype.$TCT.answer_score_issue[this.pk].fields.issue;
         },

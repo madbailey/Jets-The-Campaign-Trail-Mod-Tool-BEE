@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.3.4
+
+- Make it so the issue field in issue answer effect is a dropdown instead.
+
 ## 1.3.3
 
 - Added button to clone questions easily. Clones answers, feedback, etc.
