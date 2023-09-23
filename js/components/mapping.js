@@ -4,7 +4,9 @@ Vue.component('mapping', {
         return {
             mapSvg : Vue.prototype.$TCT.jet_data.mapping_data?.mapSvg ?? "",
             x : Vue.prototype.$TCT.jet_data.mapping_data?.x ?? 925,
-            y : Vue.prototype.$TCT.jet_data.mapping_data?.y ?? 595
+            y : Vue.prototype.$TCT.jet_data.mapping_data?.y ?? 925,
+            dx : Vue.prototype.$TCT.jet_data.mapping_data?.dx ?? 0,
+            dy : Vue.prototype.$TCT.jet_data.mapping_data?.dy ?? 0,
         };
     },
 
@@ -29,15 +31,21 @@ Vue.component('mapping', {
             <p class="text-sm text-gray-700 italic">WARNING: If you click this all your states and anything referencing your states will be deleted from your code 2 and replaced from what the tool gets from your SVG. You should only be doing this once when starting to make the mod.</p>
 
             <div v-if="mapSvg">
-                <map-preview :svg="mapSvg" :x="x" :y="y"></map-preview>
+                <map-preview :svg="mapSvg" :dx="dx" :dy="dy" :x="x" :y="y"></map-preview>
 
                 <p class="text-sm text-gray-700 italic">Change the x and y values to change how big the map appears in the preview if the map isn't fitting currently.</p>
 
                 <label>x:</label><br>
                 <input v-model="x" type="number"><br>
 
+                <label>x offset:</label><br>
+                <input v-model="dx" type="number"><br>
+
                 <label>y:</label><br>
                 <input v-model="y" type="number"><br>
+
+                <label>y offset:</label><br>
+                <input v-model="dy" type="number"><br>
 
                 <p class="text-sm text-gray-700 italic">NOTE: Each time you exit this tab your preview will disappear if you don't press Load Map From SVG, so make sure to do all your mapping in one fell swoop.</p>
                 <br>
@@ -63,6 +71,8 @@ Vue.component('mapping', {
             Vue.prototype.$TCT.jet_data.mapping_data.mapSvg = this.mapSvg;
             Vue.prototype.$TCT.jet_data.mapping_data.x = this.x;
             Vue.prototype.$TCT.jet_data.mapping_data.y = this.y;
+            Vue.prototype.$TCT.jet_data.mapping_data.dx = this.dx;
+            Vue.prototype.$TCT.jet_data.mapping_data.dy = this.dy;
 
             Vue.prototype.$TCT.loadMap();
             Vue.prototype.$globalData.state = Object.keys(Vue.prototype.$TCT.states)[0];
@@ -113,7 +123,7 @@ Vue.component('mapping', {
 
 Vue.component('map-preview', {
 
-    props: ['svg', 'x', 'y'],
+    props: ['svg', 'x', 'y', 'dx', 'dy'],
 
     template: `
     <div id="map_container">
@@ -135,7 +145,7 @@ Vue.component('map-preview', {
         },
 
         viewBox: function() {
-            return `0 0 ${this.x ?? 925} ${this.y ?? 595}`
+            return `${this.dx ?? 0} ${this.dy ?? 0} ${this.x ?? 925} ${this.y ?? 595}`
         }
     }
 
