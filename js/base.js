@@ -361,7 +361,9 @@ class TCTData {
 
     getMapForPreview(svg) {
 
-        const pathsRegex = /<path((.|\n)*?)\/>/g;
+        
+
+        const pathsRegex = /<path((.|\n)*?)(\/|<\/path)>/g;
         const idRegex = / id[ \t]*=[ \t]*"(.*)"/g;
         const dRegex = / d[ \t]*=[ \t]*"(.*)"/g;
 
@@ -448,7 +450,7 @@ class TCTData {
 
         const svg = this.jet_data.mapping_data.mapSvg;
 
-        const pathsRegex = /<path((.|\n)*?)\/>/g;
+        const pathsRegex = /<path((.|\n)*?)(\/|<\/path)>/g;
         const idRegex = / id[ \t]*=[ \t]*"(.*)"/g;
         const dRegex = / d[ \t]*=[ \t]*"(.*)"/g;
 
