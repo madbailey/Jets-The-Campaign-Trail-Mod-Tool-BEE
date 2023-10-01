@@ -27,7 +27,8 @@ function startAutosave() {
 }
 
 function saveAutosave() {
-    localStorage.setItem("autosave", Vue.prototype.$TCT.exportCode2());
+    let code2 = Vue.prototype.$TCT.exportCode2();
+    localStorage.setItem("autosave", code2);
 }
 
 async function loadData(dataName, isFirstLoad) {
