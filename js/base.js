@@ -805,7 +805,7 @@ function loadDataFromFile(raw_json) {
     var duplicates = false;
 
     raw_json = raw_json.replaceAll("\n", "");
-    raw_json = raw_json.replaceAll("\r", "")
+    raw_json = raw_json.replaceAll("\r", "");
     raw_json = raw_json.replaceAll(/ +/g, " ");
 
     states_json = extractJSON(raw_json, "campaignTrail_temp.states_json = JSON.parse(", ");", "campaignTrail_temp.states_json = [", "]")
@@ -829,7 +829,11 @@ function loadDataFromFile(raw_json) {
         }
 
         highest_pk = Math.max(highest_pk, question["pk"]);
-        question['fields']['description'] = question['fields']['description'].replaceAll("â€™", "'").replaceAll("â€”", "—");
+
+        if(question.fields.description) {
+            question['fields']['description'] = question['fields']['description'].replaceAll("â€™", "'").replaceAll("â€”", "—");
+        }
+        
         questions.set(question.pk, question);
     });
 
@@ -842,7 +846,11 @@ function loadDataFromFile(raw_json) {
         }
 
         highest_pk = Math.max(highest_pk, answer["pk"]);
-        answer['fields']['description'] = answer['fields']['description'].replaceAll("â€™", "'").replaceAll("â€”", "—");
+
+        if(answer.fields.description) {
+            answer['fields']['description'] = answer['fields']['description'].replaceAll("â€™", "'").replaceAll("â€”", "—");
+        }
+        
         key = answer["pk"];
         answers[key] = answer;
     });
@@ -856,7 +864,11 @@ function loadDataFromFile(raw_json) {
         }
 
         highest_pk = Math.max(highest_pk, feedback["pk"]);
-        feedback['fields']['answer_feedback'] = feedback['fields']['answer_feedback'].replaceAll("â€™", "'").replaceAll("â€”", "—");
+
+        if(feedback.fields.answer_feedback) {
+            feedback['fields']['answer_feedback'] = feedback['fields']['answer_feedback'].replaceAll("â€™", "'").replaceAll("â€”", "—");
+        }
+        
         key = feedback['pk'];
         feedbacks[key] = feedback;
     });

@@ -54,6 +54,9 @@ Vue.component('question-picker', {
         },
 
         questionDescription:function(question) {
+            if(!question.fields.description) {
+                return "ERR BAD DESCRIPTION";
+            }
             return question.fields.description.slice(0,33) + "...";
         },
 
