@@ -228,6 +228,8 @@ Vue.component('issue', {
     template: `
     <div class="mx-auto bg-gray-100 p-4">
 
+        <button class="bg-red-500 text-white p-2 my-2 rounded hover:bg-red-600" v-on:click="deleteIssue()">Delete Issue</button>
+
         <h1 class="font-bold">ISSUE PK {{this.pk}}</h1><br>
 
         <label for="name">Issue Name</label><br>
@@ -285,6 +287,31 @@ Vue.component('issue', {
             Vue.prototype.$globalData.filename = "";
             Vue.prototype.$globalData.filename = temp;
         },
+
+        deleteIssue: function() {
+
+            x = Vue.prototype.$TCT.getCandidateIssueScoreForIssue(this.pk);
+            for(let i = 0; i < x.length; i++) {
+                delete Vue.prototype.$TCT.candidate_issue_score[x[i].pk];
+            }
+
+            x = Vue.prototype.$TCT.getStateIssueScoresForIssue(this.pk);
+            for(let i = 0; i < x.length; i++) {
+                delete Vue.prototype.$TCT.state_issue_scores[x[i].pk];
+            }
+
+            x = Vue.prototype.$TCT.getRunningMateIssueScoreForIssue(this.pk);
+            for(let i = 0; i < x.length; i++) {
+                delete Vue.prototype.$TCT.running_mate_issue_score[x[i].pk];
+            }
+
+            delete Vue.prototype.$TCT.issues[this.pk];
+            
+            Vue.prototype.$globalData.issue = firstNonNull(Object.values(Vue.prototype.$TCT.issues)).pk;
+            const temp = Vue.prototype.$globalData.filename;
+            Vue.prototype.$globalData.filename = "";
+            Vue.prototype.$globalData.filename = temp;
+        }
 
     },
 
