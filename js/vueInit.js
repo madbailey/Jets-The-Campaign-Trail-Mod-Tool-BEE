@@ -31,6 +31,10 @@ function saveAutosave() {
     localStorage.setItem("autosave", code2);
 }
 
+function firstNonNull(arr) {
+    return arr.filter((x) => x !== null)[0]
+}
+
 async function loadData(dataName, isFirstLoad) {
     let mode = QUESTION;
     let raw;
@@ -55,10 +59,10 @@ async function loadData(dataName, isFirstLoad) {
     if(Vue.prototype.$globalData == null) {
         Vue.prototype.$globalData = Vue.observable({
             mode: mode,
-            question: Array.from(Vue.prototype.$TCT.questions.values())[0].pk,
-            state: Object.values(Vue.prototype.$TCT.states)[0].pk,
-            issue: Object.values(Vue.prototype.$TCT.issues)[0].pk,
-            candidate: getListOfCandidates()[0][0],
+            question: firstNonNull(Array.from(Vue.prototype.$TCT.questions.values())).pk,
+            state: firstNonNull(Object.values(Vue.prototype.$TCT.states)).pk,
+            issue: firstNonNull(Object.values(Vue.prototype.$TCT.issues)).pk,
+            candidate: firstNonNull(getListOfCandidates())[0],
             filename: "default"
         });
     }

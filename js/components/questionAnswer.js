@@ -51,6 +51,28 @@ Vue.component('question', {
         },
 
         deleteAnswer: function(pk) {
+
+            let referencedFeedbacks = Vue.prototype.$TCT.getAdvisorFeedbackForAnswer(pk);
+            for(let i = 0; i < referencedFeedbacks.length; i++) {
+                delete Vue.prototype.$TCT.answer_feedback[referencedFeedbacks[i].pk];
+            }
+
+            let x = Vue.prototype.$TCT.getStateScoreForAnswer(pk);
+            for(let i = 0; i < x.length; i++) {
+                delete Vue.prototype.$TCT.answer_score_state[x[i].pk];
+            }
+
+            x = Vue.prototype.$TCT.getIssueScoreForAnswer(pk);
+            for(let i = 0; i < x.length; i++) {
+                delete Vue.prototype.$TCT.answer_score_issue[x[i].pk];
+            }
+
+            x = Vue.prototype.$TCT.getGlobalScoreForAnswer(pk);
+            for(let i = 0; i < x.length; i++) {
+                delete Vue.prototype.$TCT.answer_score_global[x[i].pk];
+            }
+
+
             this.temp_answers = []
             delete Vue.prototype.$TCT.answers[pk];
         },
@@ -72,6 +94,11 @@ Vue.component('question', {
         },
 
         deleteQuestion() {
+            let referencedAnswers = Vue.prototype.$TCT.getAnswersForQuestion(this.pk);
+            for(let i = 0; i < referencedAnswers.length; i++) {
+                this.deleteAnswer(referencedAnswers[i].pk);
+            }
+
             delete Vue.prototype.$TCT.questions.delete(this.pk);
             Vue.prototype.$globalData.question = Array.from(Vue.prototype.$TCT.questions.values())[0].pk;
 
