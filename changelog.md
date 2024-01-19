@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.3.5
+
+- Clean up sidebar to fit closer together
+- Add "Add State" button as requested by S4M.
+
 ## 1.3.4
 
 - Make it so the issue field in issue answer effect is a dropdown instead.

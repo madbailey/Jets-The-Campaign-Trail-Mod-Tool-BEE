@@ -440,6 +440,60 @@ class TCTData {
         return candidatePk;
     }
 
+    createNewState() {
+        const cans = this.getAllCandidatePKs();
+        const issues = Object.keys(this.issues);
+
+        const newPk = this.getNewPk();
+        let x = {
+            "model": "campaign_trail.state",
+            "pk": newPk,
+            "fields": {
+                "name": "New State",
+                "abbr": "NST",
+                "electoral_votes": 1,
+                "popular_votes": 10,
+                "poll_closing_time": 120,
+                "winner_take_all_flg": 1,
+                "election": -1,
+            }
+        }
+        this.states[newPk] = x;
+        
+        for(let i = 0; i < cans.length; i++) {
+            const cPk = this.getNewPk();
+            // Create candidate state multipliers
+            let c = {
+                "model": "campaign_trail.candidate_state_multiplier",
+                "pk": cPk,
+                "fields": {
+                    "candidate": cans[i],
+                    "state": newPk,
+                    "state_multiplier": 1
+                }
+            }
+            this.candidate_state_multiplier[cPk] = c;
+        }
+
+        for(let i = 0; i < issues.length; i++) {
+            const iPk = this.getNewPk();
+            // Create state issue scores
+            let iss = {
+                "model": "campaign_trail.state_issue_score",
+                "pk": iPk,
+                "fields": {
+                    "state": newPk,
+                    "issue": issues[i],
+                    "state_issue_score": 0,
+                    "weight": 1.5
+                }
+            }
+            this.state_issue_scores[iPk] = iss;
+        }
+
+        return newPk;
+    }
+
     loadMap() {
 
         const cans = this.getAllCandidatePKs();

@@ -1,7 +1,7 @@
 Vue.component('question-picker', {
 
     template: `
-    <div class="mx-auto p-6">
+    <div class="mx-auto p-3">
 
     <label for="questionPicker">Questions <span class="text-gray-700 italic">({{numberOfQuestions}})</span>:</label><br>
 
@@ -12,7 +12,7 @@ Vue.component('question-picker', {
     <button class="bg-green-500 text-white p-2 my-2 rounded hover:bg-green-600" v-on:click="addQuestion()">Add Question</button>
     <button class="bg-blue-500 text-white p-2 my-2 rounded hover:bg-blue-600" v-on:click="cloneQuestion()">Clone Question</button>
 
-    <p class="text-sm text-gray-700 italic">WARNING: When adding and deleting questions, remember that your code 1 needs to have the same number of questions as in your code 2!</p>
+    <p class="text-xs text-gray-700 italic">WARNING: When adding and deleting questions, remember that your code 1 needs to have the same number of questions as in your code 2!</p>
 
     </div>
     `,
@@ -91,13 +91,18 @@ Vue.component('question-picker', {
 Vue.component('state-picker', {
 
     template: `
-    <div class="mx-auto p-6">
+    <div class="mx-auto p-3">
 
     <label for="statePicker">States:</label><br>
 
     <select @click="onClick" @change="onChange($event)" name="statePicker" id="statePicker">
-        <option v-for="state in states" :value="state.pk" :key="state.pk">{{state.pk}} - {{state.fields.abbr}}</option>
+        <option v-for="state in states" :value="state.pk" :selected="currentState == state.pk"  :key="state.pk">{{state.pk}} - {{state.fields.abbr}}</option>
     </select>
+
+    <br>
+    <button class="bg-green-500 text-white p-2 my-2 rounded hover:bg-green-600" v-on:click="addState()">Add State</button>
+
+    <p class="text-xs text-gray-700 italic">WARNING: If you add a state with the Add State button the abbreviation will need to exist in your map svg. Also change the election pk to your election. Use only if you know what you're doing.</p>
 
     </div>
     `,
@@ -112,6 +117,20 @@ Vue.component('state-picker', {
             if(Vue.prototype.$globalData.mode != STATE) {
                 Vue.prototype.$globalData.mode = STATE;
             }
+        },
+
+        addState:function(evt) {
+
+            let newPk = Vue.prototype.$TCT.createNewState();
+           
+            const temp = Vue.prototype.$globalData.filename;
+            Vue.prototype.$globalData.filename = "";
+            Vue.prototype.$globalData.filename = temp;
+
+            Vue.prototype.$globalData.mode = STATE;
+            Vue.prototype.$globalData.state = newPk;
+
+            this.onChange(newPk);
         }
     },
 
@@ -119,6 +138,10 @@ Vue.component('state-picker', {
         states: function () {
           let a = [Vue.prototype.$globalData.filename];
           return Object.values(Vue.prototype.$TCT.states);
+        },
+
+        currentState: function() {
+            return Vue.prototype.$globalData.state;
         }
     }
 })
@@ -126,7 +149,7 @@ Vue.component('state-picker', {
 Vue.component('issue-picker', {
 
     template: `
-    <div class="mx-auto p-6">
+    <div class="mx-auto p-3">
 
     <label for="issuePicker">Issues:</label><br>
 
@@ -162,7 +185,7 @@ Vue.component('issue-picker', {
 Vue.component('candidate-picker', {
 
     template: `
-    <div class="mx-auto p-6">
+    <div class="mx-auto p-3">
 
     <label for="candidatePicker">Candidates:</label><br>
 
@@ -213,7 +236,7 @@ Vue.component('candidate-picker', {
 Vue.component('cyoa-picker', {
 
     template: `
-    <div class="mx-auto p-6">
+    <div class="mx-auto py-1 px-3">
 
     <button class="bg-gray-300 p-2 my-2 rounded hover:bg-gray-500" v-on:click="gotoCyoa()">CYOA</button>
 
@@ -230,7 +253,7 @@ Vue.component('cyoa-picker', {
 Vue.component('banner-picker', {
 
     template: `
-    <div class="mx-auto p-6">
+    <div class="mx-auto py-1 px-3">
 
     <button class="bg-gray-300 p-2 my-2 rounded hover:bg-gray-500" v-on:click="gotoBanner()">Banner Settings</button>
 
@@ -247,7 +270,7 @@ Vue.component('banner-picker', {
 Vue.component('template-picker', {
 
     template: `
-    <div class="mx-auto p-6">
+    <div class="mx-auto py-1 px-3">
 
     <label for="templatePicker">Choose a Template:</label><br>
 
@@ -280,7 +303,7 @@ Vue.component('template-picker', {
 Vue.component('ending-picker', {
 
     template: `
-    <div class="mx-auto p-6">
+    <div class="mx-auto py-1 px-3">
 
     <button class="bg-gray-300 p-2 my-2 rounded hover:bg-gray-500" v-on:click="gotoEndings()">Custom Endings</button>
 
@@ -297,7 +320,7 @@ Vue.component('ending-picker', {
 Vue.component('mapping-picker', {
 
     template: `
-    <div class="mx-auto p-6">
+    <div class="mx-auto py-1 px-3">
 
     <button class="bg-gray-300 p-2 my-2 rounded hover:bg-gray-500" v-on:click="gotoMapping()">Custom Map Tools</button>
 
@@ -314,7 +337,7 @@ Vue.component('mapping-picker', {
 Vue.component('bulk-picker', {
 
     template: `
-    <div class="mx-auto p-6">
+    <div class="mx-auto py-1 px-3">
 
     <button class="bg-gray-300 p-2 my-2 rounded hover:bg-gray-500" v-on:click="gotoBulk()">Bulk Tools</button>
 
