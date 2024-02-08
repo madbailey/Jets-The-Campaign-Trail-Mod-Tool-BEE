@@ -2,12 +2,31 @@ Vue.component('state', {
 
     props: ['pk'],
 
+    data() {
+        return {
+            margins:Vue.prototype.$TCT.getPVForState(this.pk)
+        };
+    },
+
+    created() {
+        setInterval(() => {
+            this.margins = Vue.prototype.$TCT.getPVForState(this.pk);
+        }, 100);
+    },
+
     template: `
     <div class="mx-auto bg-gray-100 p-4">
 
     <button class="bg-red-500 text-white p-2 my-2 rounded hover:bg-red-600" v-on:click="deleteState()">Delete State</button>
 
     <h1 class="font-bold">{{stateName}} - STATE PK {{this.pk}}</h1><br>
+
+    <h2 class="font-bold">Predicted Starting Margins</h2>
+    <p>(These fluctuate due to RNG)</p>
+    <ul>
+    <li v-for="info in margins" :key="info">{{info}}</li>
+    </ul>
+    <br>
 
     <label for="name">State Name:</label><br>
     <input @input="onInput($event)" :value="stateName" name="name" type="text"><br><br>
@@ -71,6 +90,10 @@ Vue.component('state', {
 
             Vue.prototype.$TCT.states[this.pk].fields[evt.target.name] = value;
         },
+
+        refreshMargins: function(evt) {
+            Vue.prototype.$TCT.getPVForState(this.pk);
+        }
     },
 
     computed: {
