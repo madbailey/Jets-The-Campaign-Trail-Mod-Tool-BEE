@@ -15,18 +15,19 @@ Vue.component('state', {
     },
 
     template: `
-    <div class="mx-auto bg-gray-100 p-4">
+    <div style="position:relative" class="mx-auto bg-gray-100 p-4">
 
     <button class="bg-red-500 text-white p-2 my-2 rounded hover:bg-red-600" v-on:click="deleteState()">Delete State</button>
 
     <h1 class="font-bold">{{stateName}} - STATE PK {{this.pk}}</h1><br>
 
-    <h2 class="font-bold">Predicted Starting Margins</h2>
-    <p>(These fluctuate due to RNG)</p>
-    <ul>
-    <li v-for="info in margins" :key="info">{{info}}</li>
-    </ul>
-    <br>
+    <div class="starting-margins">
+        <h2 style="text-align:center" class="font-bold">Predicted Starting PV</h2>
+        <ul>
+        <li class="font-bold text-xl" v-for="info in margins" :key="info">{{info}}</li>
+        </ul>
+        <p class="text-xs">These use the default global_parameter values. To change those you can use the console and edit the global_parameter object. You only need to if you changed those values in your code 1.</p>
+    </div>
 
     <label for="name">State Name:</label><br>
     <input @input="onInput($event)" :value="stateName" name="name" type="text"><br><br>

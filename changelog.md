@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.3.6
+
+- Add PV predictor
+
 ## 1.3.5
 
 - Clean up sidebar to fit closer together
