@@ -401,6 +401,16 @@ class TCTData {
         }
     }
 
+    getPVForState(pk) {
+        return getCurrentVoteResults(this).filter((x) => x.state == pk)[0].result.map(
+            (x) => {
+                let nickname = this.getNicknameForCandidate(x.candidate);
+                let canName = nickname != '' && nickname != null ? nickname : x.candidate;
+                return `${canName} - ${(x.percent * 100).toFixed(2)}% (${x.votes} votes)`;
+            }
+        );
+    }
+
     addCandidate() {
         const candidatePk = this.getNewPk();
 
