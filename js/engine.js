@@ -65,7 +65,13 @@ const VARIANCE = global_parameter[0].fields.global_variance;
 function getCurrentVoteResults(e) {
     rand = sfc32(seed[0], seed[1], seed[2], seed[3]);
     let t = 1;
-    const i = e.getAllCandidatePKs();
+    const raw = getListOfCandidates();
+    let i = [];
+
+    for(combo of raw) {
+        i.push(combo[0]);
+    }
+
     let r;
     e.player_visits = [];
     global_parameter[0].fields.question_count = e.questions.size;
@@ -73,7 +79,6 @@ function getCurrentVoteResults(e) {
     let running_mate_issue_score = Object.values(e.running_mate_issue_score);
     let state_issue_score = Object.values(e.state_issue_scores);
     let states = Object.values(e.states);
-
 
     const s = i.map((candidate) => {
       e.player_answers = [];
