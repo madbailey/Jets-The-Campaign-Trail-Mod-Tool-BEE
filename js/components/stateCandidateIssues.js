@@ -477,6 +477,12 @@ Vue.component('candidate', {
 
     props: ['pk'],
 
+    data() {
+        return {
+            temp: [0]
+        };
+    },
+
     template: `
     <div class="mx-auto bg-gray-100 p-4">
 
@@ -491,6 +497,7 @@ Vue.component('candidate', {
 
         <details open>
         <summary>Candidate State Multipliers ({{this.stateMultipliersForCandidate.length}})</summary>
+        <button @click="generateStateMultipliers()" class="bg-green-500 text-white p-2 my-2 rounded hover:bg-green-600" v-if="stateMultipliersForCandidate.length == 0">Generate Missing State Multipliers</button>
         <ul>
             <candidate-state-multiplier v-for="c in stateMultipliersForCandidate" :pk="c.pk" :key="c.pk"></candidate-state-multiplier>
         </ul>
@@ -500,6 +507,11 @@ Vue.component('candidate', {
     `,
 
     methods: {
+
+        generateStateMultipliers: function() {
+            this.temp = [];
+            Vue.prototype.$TCT.addStateMultipliersForCandidate(this.pk);
+        },
 
         onInput: function(evt, pk) {
 
@@ -543,6 +555,7 @@ Vue.component('candidate', {
         },
 
         stateMultipliersForCandidate: function () {
+            this.temp;
             return Vue.prototype.$TCT.getStateMultiplierForCandidate(this.pk);
         },
     }

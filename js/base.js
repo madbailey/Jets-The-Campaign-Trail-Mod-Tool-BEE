@@ -411,12 +411,8 @@ class TCTData {
         );
     }
 
-    addCandidate() {
-        const candidatePk = this.getNewPk();
-
+    addStateMultipliersForCandidate(candidatePk) {
         const s = Object.keys(this.states);
-        const issues = Object.keys(this.issues);
-
         for(let i = 0; i < s.length; i++) {
             const cPk = this.getNewPk();
             // Create candidate state multipliers
@@ -431,6 +427,15 @@ class TCTData {
             }
             this.candidate_state_multiplier[cPk] = c;
         }
+    }
+
+    addCandidate() {
+        const candidatePk = this.getNewPk();
+
+        const s = Object.keys(this.states);
+        const issues = Object.keys(this.issues);
+
+        addStateMultipliersForCandidate(candidatePk);
 
         for(let i = 0; i < issues.length; i++) {
             const iPk = this.getNewPk();
