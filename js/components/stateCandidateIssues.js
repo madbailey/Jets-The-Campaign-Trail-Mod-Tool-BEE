@@ -4,14 +4,14 @@ Vue.component('state', {
 
     data() {
         return {
-            margins:Vue.prototype.$TCT.getPVForState(this.pk)
+            temp:1
         };
     },
 
     created() {
-        setInterval(() => {
-            this.margins = Vue.prototype.$TCT.getPVForState(this.pk);
-        }, 100);
+        /*setInterval(() => {
+            this.temp = Math.random()
+        }, 100);*/
     },
 
     template: `
@@ -26,6 +26,7 @@ Vue.component('state', {
         <ul>
         <li class="font-bold text-xl" v-for="info in margins" :key="info">{{info}}</li>
         </ul>
+        <p class="text-xs">You need to exit and enter this state to see changes for now. Sorry I am working on fixing it!</p>
         <p class="text-xs">These use the default global_parameter values. To change those you can use the console and edit the global_parameter object. You only need to if you changed those values in your code 1.</p>
     </div>
 
@@ -133,6 +134,10 @@ Vue.component('state', {
 
         stateIssueScores: function () {
             return Vue.prototype.$TCT.getIssueScoreForState(this.pk);
+        },
+
+        margins: function() {
+            return Vue.prototype.$TCT.getPVForState(this.pk);
         }
     }
 })
