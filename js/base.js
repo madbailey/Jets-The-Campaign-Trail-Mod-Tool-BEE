@@ -435,7 +435,7 @@ class TCTData {
         const s = Object.keys(this.states);
         const issues = Object.keys(this.issues);
 
-        addStateMultipliersForCandidate(candidatePk);
+        this.addStateMultipliersForCandidate(candidatePk);
 
         for(let i = 0; i < issues.length; i++) {
             const iPk = this.getNewPk();
