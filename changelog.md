@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.3.7
+
+- Add fallback if PV predict fails (still need to fix)
+
 ## 1.3.6
 
 - Add PV predictor
