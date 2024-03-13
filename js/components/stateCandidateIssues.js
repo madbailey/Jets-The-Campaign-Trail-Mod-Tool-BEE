@@ -205,6 +205,7 @@ Vue.component('state-issue-score', {
     
         <label for="state_issue_score">State Issue Score</label><br>
         <input @input="onInput($event)" :value="stateIssueScore" name="state_issue_score" type="number"><br>
+        <p class="text-xs">(-1.0 = Stance 1, 1.0 = Stance 7)</p>
     
         <label for="weight">Issue Weight</label><br>
         <input @input="onInput($event)" :value="weight" name="weight" type="number"><br>
@@ -422,7 +423,7 @@ Vue.component('candidate-issue-score', {
     
         <label>Issue Score</label><br>
         <input @input="onInput($event)" :value="issueScore" name="issue_score" type="number"></input><br>
-    
+        <p class="text-xs">(-1.0 = Stance 1, 1.0 = Stance 7)</p>
     </div>
     `,
 
