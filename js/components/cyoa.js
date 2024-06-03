@@ -109,7 +109,7 @@ Vue.component('cyoa-event', {
         description:function(qa) {
 
             if(qa.fields.description == null || qa.fields.description == '') {
-                return '';
+                return '...';
             }
 
             return qa.fields.description.slice(0,50) + "...";
