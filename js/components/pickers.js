@@ -57,7 +57,7 @@ Vue.component('question-picker', {
             if(!question.fields.description) {
                 return "ERR BAD DESCRIPTION";
             }
-            return question.fields.description.slice(0,33) + "...";
+            return String(question.fields.description).slice(0,33) + "...";
         },
 
         onChange:function(evt) {
