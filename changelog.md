@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.3.8
+
+- Add clone answer button
+
 ## 1.3.7
 
 - Add fallback if PV predict fails (still need to fix)

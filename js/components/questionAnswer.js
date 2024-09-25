@@ -27,7 +27,7 @@ Vue.component('question', {
         <summary>Answers ({{this.answers.length}})</summary>
         <button class="bg-green-500 text-white p-2 my-2 rounded hover:bg-green-600" v-on:click="addAnswer()">Add Answer</button>
         <ul>
-            <answer @deleteAnswer="deleteAnswer" v-for="answer in answers" :pk="answer.pk" :key="answer.pk"></answer>
+            <answer @cloneAnswer="cloneAnswer" @deleteAnswer="deleteAnswer" v-for="answer in answers" :pk="answer.pk" :key="answer.pk"></answer>
         </ul>
         </details>
 
@@ -105,7 +105,14 @@ Vue.component('question', {
             const temp = Vue.prototype.$globalData.filename;
             Vue.prototype.$globalData.filename = "";
             Vue.prototype.$globalData.filename = temp;
-        }
+        },
+
+        cloneAnswer: function(pk) {
+            const thisAnswer = Vue.prototype.$TCT.answers[pk];
+            const newQuestion = Vue.prototype.$TCT.cloneAnswer(thisAnswer, thisAnswer.fields.question);
+            this.temp_answers = [];
+            Vue.prototype.$TCT.answers[newPk] = answer;
+        },
 
     },
 
@@ -155,6 +162,7 @@ Vue.component('answer', {
         <textarea @input="onInput($event)" :value="description" name="description" rows="4" cols="50"></textarea><br>
         
         <button class="bg-red-500 text-white p-2 my-2 rounded hover:bg-red-600" v-on:click="deleteAnswer()">Delete Answer</button>
+        <button class="bg-blue-500 text-white p-2 my-2 rounded hover:bg-blue-600" v-on:click="cloneAnswer()">Clone Answer</button>
 
         <details>
         <summary>Answer Feedback ({{this.feedbacks.length}})</summary>
@@ -192,6 +200,11 @@ Vue.component('answer', {
     `,
 
     methods: {
+
+        cloneAnswer: function() {
+            this.$emit('cloneAnswer', this.pk)
+            const thisAnswer = Vue.prototype.$TCT.answers[this.pk];
+        },
 
         addFeedback: function() {
             const newPk =  Vue.prototype.$TCT.getNewPk();
