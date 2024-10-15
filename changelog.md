@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.3.9
+
+- Add bulk multi state multiplier tool
+
 ## 1.3.8
 
 - Add clone answer button

@@ -88,6 +88,12 @@ Vue.component('bulk', {
 
         <button class="bg-green-500 text-white p-2 my-2 rounded hover:bg-green-600" v-on:click="setStateMultipliers()">Set State Multipliers</button>
 
+        <br>
+        <br>
+        <label for="multiplier">Multiply All Checked State Multipliers By:</label><br>
+        <input v-model="multiplier" name="multiplier" type="number"><br>
+        <button class="bg-green-500 text-white p-2 my-2 rounded hover:bg-green-600" v-on:click="multiplyStateMultipliers()">Multiply State Multipliers</button>
+
     </details>
 
     </div>
@@ -178,6 +184,24 @@ Vue.component('bulk', {
             }
 
             alert("Set state multipliers!")
+        },
+
+        multiplyStateMultipliers: function() {
+            const stateMultipliers = document.getElementsByClassName("bulkStateMultiplier");
+            for(let i = 0; i < stateMultipliers.length; i++) {
+                const score = stateMultipliers[i];
+                const data = score.__vue__._data;
+
+                const pk = Number(score.__vue__._props.pk);
+                const include = data.include;
+
+                if(include) {
+                    Vue.prototype.$TCT.candidate_state_multiplier[pk].fields.state_multiplier *= Number(this.multiplier);
+                }
+                        
+            }
+
+            alert("Multiplied state multipliers!")
         },
 
         checkAllStates: function() {
