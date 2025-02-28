@@ -360,25 +360,49 @@ class TCTData {
     }
 
     getMapForPreview(svg) {
-
-        
-
+        console.log("getMapForPreview called with SVG length:", svg.length);
+    
         const pathsRegex = /<path((.|\n)*?)(\/|<\/path)>/g;
         const idRegex = / id[ \t]*=[ \t]*"(.*)"/g;
         const dRegex = / d[ \t]*=[ \t]*"(.*)"/g;
-
+    
         const paths = [...svg.match(pathsRegex)];
-
+        console.log(`Found ${paths.length} path elements in SVG`);
+    
         let out = [];
-
+    
         for(let i = 0; i < paths.length; i++) {
             const path = paths[i];
-            let id = path.match(idRegex)[0].split("\"")[1].replace("\"", "");
-            let d = path.match(dRegex)[0].split("\"")[1].replace("\"", "");
-            let abbr = id.split(" ")[0].replaceAll("-", "_");
-            out.push([abbr, d]);
+            try {
+                let idMatch = path.match(idRegex);
+                if (!idMatch) {
+                    console.warn(`Path at index ${i} has no id attribute:`, path.substring(0, 50) + "...");
+                    continue;
+                }
+                
+                let id = idMatch[0].split("\"")[1].replace("\"", "");
+                
+                let dMatch = path.match(dRegex);
+                if (!dMatch) {
+                    console.warn(`Path with id ${id} has no d attribute`);
+                    continue;
+                }
+                
+                let d = dMatch[0].split("\"")[1].replace("\"", "");
+                let abbr = id.split(" ")[0].replaceAll("-", "_");
+                
+                out.push([abbr, d]);
+                
+                // Log every 10th state to avoid console spam
+                if (i % 10 === 0) {
+                    console.log(`Processed state: ${abbr}`);
+                }
+            } catch (error) {
+                console.error(`Error processing path at index ${i}:`, error);
+            }
         }
-
+    
+        console.log(`Successfully processed ${out.length} states`);
         return out;
     }
 
@@ -556,6 +580,7 @@ class TCTData {
                 "d": d
             }
             this.states[newPk] = x;
+            this.states[newPk].d = d;
             
             for(let i = 0; i < cans.length; i++) {
                 const cPk = this.getNewPk();
