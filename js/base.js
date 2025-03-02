@@ -361,36 +361,39 @@ class TCTData {
 
     getMapForPreview(svg) {
         console.log("getMapForPreview called with SVG length:", svg.length);
-    
-        const pathsRegex = /<path((.|\n)*?)(\/|<\/path)>/g;
-        const idRegex = / id[ \t]*=[ \t]*"(.*)"/g;
-        const dRegex = / d[ \t]*=[ \t]*"(.*)"/g;
-    
-        const paths = [...svg.match(pathsRegex)];
-        console.log(`Found ${paths.length} path elements in SVG`);
-    
+        
+        if (!svg || typeof svg !== 'string') {
+            console.error("Invalid SVG data: not a string");
+            return [];
+        }
+        
+        // Create a DOM parser
+        const parser = new DOMParser();
+        const svgDoc = parser.parseFromString(svg, 'image/svg+xml');
+        
+        // Query for path elements
+        const pathElements = svgDoc.querySelectorAll('path');
+        console.log(`Found ${pathElements.length} path elements in SVG`);
+        
         let out = [];
-    
-        for(let i = 0; i < paths.length; i++) {
-            const path = paths[i];
+        
+        for (let i = 0; i < pathElements.length; i++) {
             try {
-                let idMatch = path.match(idRegex);
-                if (!idMatch) {
-                    console.warn(`Path at index ${i} has no id attribute:`, path.substring(0, 50) + "...");
+                const path = pathElements[i];
+                let id = path.getAttribute('id') || path.getAttribute('data-id');
+                
+                if (!id) {
+                    console.warn(`Path at index ${i} has no id attribute`);
                     continue;
                 }
                 
-                let id = idMatch[0].split("\"")[1].replace("\"", "");
-                
-                let dMatch = path.match(dRegex);
-                if (!dMatch) {
+                let d = path.getAttribute('d');
+                if (!d) {
                     console.warn(`Path with id ${id} has no d attribute`);
                     continue;
                 }
                 
-                let d = dMatch[0].split("\"")[1].replace("\"", "");
                 let abbr = id.split(" ")[0].replaceAll("-", "_");
-                
                 out.push([abbr, d]);
                 
                 // Log every 10th state to avoid console spam

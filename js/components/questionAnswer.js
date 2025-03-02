@@ -1,6 +1,6 @@
 function loadDefaultUSMap() {
     console.log("Called function to load default US map...");
-    return fetch('js\\components\\resources\\us.svg') // Ensure this path is correct (using forward slashes)
+    return fetch('js/components/resources/us.svg')
       .then(response => response.text())
       .catch(error => {
         console.error("Error loading default US map:", error);
