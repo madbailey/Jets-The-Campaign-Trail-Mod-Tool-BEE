@@ -314,7 +314,7 @@ Vue.component('question', {
                     "issue_importance": 0
                 }
             };
-            Vue.prototype.$TCT.answer_score_issue[newPk] = x;
+            Vue.set(Vue.prototype.$TCT.answer_score_issue, newPk, x);
             this.temp_answers = [];
         },
 
@@ -883,11 +883,11 @@ Vue.component('issue-score-card', {
             <div>
                 <label class="block text-xs font-medium text-gray-700">Issue Score:</label>
                 <div class="flex items-center mt-1">
-                    <input @input="onInput($event)" :value="issueScore" name="issue_score" type="number" step="0.1"
+                    <input @input="onInput($event)" :value="issueScoreDisplay" name="issue_score" type="number" step="0.1" min="-1.0" max="1.0"
                         class="p-1 text-sm block w-20 border border-gray-300 rounded shadow-sm focus:ring-blue-500 focus:border-blue-500">
                     <div class="ml-2 flex-1 h-2 bg-gray-200 rounded">
                         <div class="h-full rounded bg-green-500" 
-                            :style="{ width: Math.min(Math.max((issueScore + 1) * 50, 0), 100) + '%' }">
+                            :style="{ width: Math.min(Math.max((parseFloat(issueScoreDisplay) + 1) * 50, 0), 100) + '%' }">
                         </div>
                     </div>
                 </div>
@@ -897,11 +897,11 @@ Vue.component('issue-score-card', {
             <div>
                 <label class="block text-xs font-medium text-gray-700">Issue Importance:</label>
                 <div class="flex items-center mt-1">
-                    <input @input="onInput($event)" :value="issueImportance" name="issue_importance" type="number" step="0.1"
+                    <input @input="onInput($event)" :value="issueImportanceDisplay" name="issue_importance" type="number" step="1" min="0"
                         class="p-1 text-sm block w-20 border border-gray-300 rounded shadow-sm focus:ring-blue-500 focus:border-blue-500">
                     <div class="ml-2 flex-1 h-2 bg-gray-200 rounded">
                         <div class="h-full rounded bg-blue-500" 
-                            :style="{ width: Math.min(Math.max(issueImportance * 20, 0), 100) + '%' }">
+                            :style="{ width: Math.min(Math.max(parseFloat(issueImportanceDisplay) * 20, 0), 100) + '%' }">
                         </div>
                     </div>
                 </div>
@@ -937,10 +937,17 @@ Vue.component('issue-score-card', {
 
         issueImportance: function () {
             return Vue.prototype.$TCT.answer_score_issue[this.pk].fields.issue_importance;
+        },
+
+        issueScoreDisplay: function () {
+            return this.issueScore !== undefined && this.issueScore !== null ? this.issueScore : 0;
+        },
+
+        issueImportanceDisplay: function () {
+            return this.issueImportance !== undefined && this.issueImportance !== null ? this.issueImportance : 0;
         }
     }
 });
-
 // State Score Card Component
 Vue.component('state-score-card', {
     props: ['pk'],
@@ -1123,10 +1130,10 @@ Vue.component('issue-score', {
         </select><br>
 
         <label for="issue_score">Issue Score:</label><br>
-        <input @input="onInput($event)" :value="issueScore" name="issue_score" type="number"><br>
+        <input @input="onInput($event)" :value="issueScore !== null && issueScore !== undefined ? issueScore : 0" name="issue_score" type="number" step="0.1">
 
         <label for="issue_importance">Issue Importance:</label><br>
-        <input @input="onInput($event)" :value="issueImportance" name="issue_importance" type="number"><br>
+        <input @input="onInput($event)" :value="issueImportance !==null && issueImportance !== undefined ? issueScore : 0" name="issue_importance" type="number"><br>
    
         <button class="bg-red-500 text-white p-2 my-2 rounded hover:bg-red-600" v-on:click="$emit('deleteIssueScore', pk)">Delete Issue Score</button>
     </li>
@@ -1463,17 +1470,15 @@ Vue.component('integrated-state-effect-visualizer', {
         },
 
         deleteStateEffect(effectPk) {
-            if (confirm(`Are you sure you want to delete state effect #${effectPk}?`)) {
-                delete Vue.prototype.$TCT.answer_score_state[effectPk];
-                this.loadStateEffects(); // Refresh data for map
-                this.effectListVersion++; // INCREMENT to force list update
-                this.mapLoaded = false; // Trigger watcher to reload map data
-                this.$nextTick(() => {
-                    this.mapLoaded = true; // Re-enable map loading
-                    this.loadMapData(); // Re-fetch map data just to be sure (optional but safe)
-                    console.log("DOM updated and map re-rendered after state effect deletion."); // Debugging
-                });
-            }
+            delete Vue.prototype.$TCT.answer_score_state[effectPk];
+            this.loadStateEffects(); // Refresh data for map
+            this.effectListVersion++; // INCREMENT to force list update
+            this.mapLoaded = false; // Trigger watcher to reload map data
+            this.$nextTick(() => {
+                this.mapLoaded = true; // Re-enable map loading
+                this.loadMapData(); // Re-fetch map data just to be sure (optional but safe)
+                console.log("DOM updated and map re-rendered after state effect deletion."); // Debugging
+            });
         },
 
 
@@ -1514,6 +1519,8 @@ Vue.component('integrated-state-effect-visualizer', {
                 this.$set(this.stateEffects, statePk, parseFloat(this.editValue));
                 this.updateOrCreateStateEffect(statePk, parseFloat(this.editValue));
             }
+
+            this.effectListVersion++;
         },
 
         updateOrCreateStateEffect(statePk, value) {
@@ -1546,6 +1553,28 @@ Vue.component('integrated-state-effect-visualizer', {
                 };
                 Vue.prototype.$TCT.answer_score_state[newPk] = newEffect;
             }
+        },
+        isExtraState(state) {
+            const districtRegex = /(?:Maine|Nebraska|ME|NE|M|N|CD|District|Congressional)[-\\s]?(\\d+)/i;
+            
+            if (state.fields.abbr === 'DC') {
+                return true;
+            }
+        
+            if (districtRegex.test(state.fields.name)) {
+                return true;
+            }
+        
+            if (state.fields.abbr &&
+                ((state.fields.abbr.startsWith("M") || state.fields.abbr.startsWith("N")) &&
+                    state.fields.abbr.length === 2 &&
+                    !isNaN(state.fields.abbr.charAt(1)))) {
+                return true;
+            }
+        
+            return state.fields.name.includes("CD") ||
+                state.fields.name.includes("District") ||
+                state.fields.name.includes("Congressional");
         },
 
         selectAll() {
@@ -1685,6 +1714,16 @@ Vue.component('integrated-state-effect-visualizer', {
             return this.usingBasicShapes;
         },
 
+        smallStates() {
+            // small states are hard to click on
+            const smallStateAbbrs = ['CT', 'RI', 'DE', 'NH', 'VT'];
+            
+            return this.states.filter(state => 
+                smallStateAbbrs.includes(state.fields.abbr) && 
+                !this.isExtraState(state)
+            );
+        },
+
         extraStates() {
             const districtRegex = /(?:Maine|Nebraska|ME|NE|M|N|CD|District|Congressional)[-\\s]?(\\d+)/i;
 
@@ -1715,6 +1754,8 @@ Vue.component('integrated-state-effect-visualizer', {
         },
 
         allStateEffectsForAnswer() {
+
+            this.effectListVersion; 
             console.log("allStateEffectsForAnswer computed property recalculated, version:", this.effectListVersion); // Debugging
             const stateScores = Vue.prototype.$TCT.getStateScoreForAnswer(this.answerId);
             return stateScores.map(score => {
@@ -1814,7 +1855,7 @@ Vue.component('integrated-state-effect-visualizer', {
                     </svg>
                 </div>
 
-                <!-- D.C. and Congressional Districts Buttons -->
+                <!-- Small States, D.C. and Congressional Districts Buttons -->
                 <div class="flex flex-wrap gap-1 mt-2">
                     <button v-if="states.find(s => s.fields.abbr === 'DC')"
                         @click="toggleStateSelection(states.find(s => s.fields.abbr === 'DC').pk)"
@@ -1822,6 +1863,17 @@ Vue.component('integrated-state-effect-visualizer', {
                         class="text-white px-2 py-1 text-xs rounded hover:bg-blue-600">
                         D.C.
                     </button>
+                    
+                    <!-- Small States -->
+                    <button v-for="state in smallStates"
+                        :key="'small-' + state.pk"
+                        @click="toggleStateSelection(state.pk)"
+                        :class="{'bg-blue-700': isStateSelected(state.pk), 'bg-blue-500': !isStateSelected(state.pk)}"
+                        class="text-white px-2 py-1 text-xs rounded hover:bg-blue-600">
+                        {{ state.fields.abbr }}
+                    </button>
+                    
+                    <!-- Congressional Districts -->
                     <button v-for="state in extraStates"
                         :key="state.pk"
                         @click="toggleStateSelection(state.pk)"
@@ -1911,144 +1963,3 @@ Vue.component('integrated-state-effect-visualizer', {
     </div>
     `
 });
-
-Vue.component('state-score', {
-
-    props: ['pk'],
-
-    template: `
-    <li class="mx-auto bg-gray-100 p-4">
-        <h1 class="font-bold">STATE SCORE PK {{this.pk}}</h1><br>
-
-        <label for="state">State PK:</label><br>
-        <select @change="onInput($event)" name="state">
-            <option v-for="s in states" :selected="s.pk == state" :value="s.pk" :key="s.pk">{{s.pk}} - {{s.fields.abbr}}</option>
-        </select><br>
-
-        <label for="candidate">Candidate <span v-if="candidateNickname" class="italic text-gray-400">({{this.candidateNickname}})</span>:</label><br>
-        <input @input="onInput($event)" :value="candidate" name="candidate" type="number"><br>
-
-        <label for="affected_candidate">Affected Candidate <span v-if="affectedNickname" class="italic text-gray-400">({{this.affectedNickname}})</span>:</label><br>
-        <input @input="onInput($event)" :value="affected" name="affected_candidate" type="number"><br>
-
-        <label for="state_multiplier">State Multiplier:</label><br>
-        <input @input="onInput($event)" :value="multiplier" name="state_multiplier" type="number"><br>
-
-        <button class="bg-red-500 text-white p-2 my-2 rounded hover:bg-red-600" v-on:click="$emit('deleteStateScore', pk)">Delete State Score</button>
-    </li>
-    `,
-
-    methods: {
-        onInput: function (evt) {
-
-            let value = evt.target.value;
-            if (shouldBeSavedAsNumber(value)) {
-                value = Number(value);
-            }
-
-            Vue.prototype.$TCT.answer_score_state[this.pk].fields[evt.target.name] = value;
-        }
-    },
-
-    computed: {
-
-        candidateNickname: function () {
-            return Vue.prototype.$TCT.getNicknameForCandidate(this.candidate);
-        },
-
-        affectedNickname: function () {
-            return Vue.prototype.$TCT.getNicknameForCandidate(this.affected);
-        },
-
-        candidate: function () {
-            return Vue.prototype.$TCT.answer_score_state[this.pk].fields.candidate;
-        },
-
-        affected: function () {
-            return Vue.prototype.$TCT.answer_score_state[this.pk].fields.affected_candidate;
-        },
-
-        multiplier: function () {
-            return Vue.prototype.$TCT.answer_score_state[this.pk].fields.state_multiplier;
-        },
-
-        state: function () {
-            return Vue.prototype.$TCT.answer_score_state[this.pk].fields.state;
-        },
-
-        states: function () {
-            return Object.values(Vue.prototype.$TCT.states);
-        }
-    }
-})
-
-
-Vue.component('state-score', {
-
-    props: ['pk'],
-
-    template: `
-    <li class="mx-auto bg-gray-100 p-4">
-        <h1 class="font-bold">STATE SCORE PK {{this.pk}}</h1><br>
-        
-        <label for="state">State PK:</label><br>
-        <select @change="onInput($event)" name="state">
-            <option v-for="s in states" :selected="s.pk == state" :value="s.pk" :key="s.pk">{{s.pk}} - {{s.fields.abbr}}</option>
-        </select><br>
-
-        <label for="candidate">Candidate <span v-if="candidateNickname" class="italic text-gray-400">({{this.candidateNickname}})</span>:</label><br>
-        <input @input="onInput($event)" :value="candidate" name="candidate" type="number"><br>
-
-        <label for="affected_candidate">Affected Candidate <span v-if="affectedNickname" class="italic text-gray-400">({{this.affectedNickname}})</span>:</label><br>
-        <input @input="onInput($event)" :value="affected" name="affected_candidate" type="number"><br>
-
-        <label for="state_multiplier">State Multiplier:</label><br>
-        <input @input="onInput($event)" :value="multiplier" name="state_multiplier" type="number"><br>
-
-        <button class="bg-red-500 text-white p-2 my-2 rounded hover:bg-red-600" v-on:click="$emit('deleteStateScore', pk)">Delete State Score</button>
-    </li>
-    `,
-
-    methods: {
-        onInput: function(evt) {
-            
-            let value = evt.target.value;
-            if(shouldBeSavedAsNumber(value)) {
-                value = Number(value);
-            }
-
-            Vue.prototype.$TCT.answer_score_state[this.pk].fields[evt.target.name] = value;
-        }
-    },
-
-    computed: {
-
-        candidateNickname: function() {
-            return Vue.prototype.$TCT.getNicknameForCandidate(this.candidate);
-        },
-
-        affectedNickname: function() {
-            return Vue.prototype.$TCT.getNicknameForCandidate(this.affected);
-        },
-        
-        candidate: function () {
-          return Vue.prototype.$TCT.answer_score_state[this.pk].fields.candidate;
-        },
-
-        affected: function () {
-            return Vue.prototype.$TCT.answer_score_state[this.pk].fields.affected_candidate;
-        },
-
-        multiplier: function () {
-            return Vue.prototype.$TCT.answer_score_state[this.pk].fields.state_multiplier;
-        },
-
-        state: function() {
-            return Vue.prototype.$TCT.answer_score_state[this.pk].fields.state;
-        },
-
-        states: function() {
-            return Object.values(Vue.prototype.$TCT.states);
-        }
-    }
-})
