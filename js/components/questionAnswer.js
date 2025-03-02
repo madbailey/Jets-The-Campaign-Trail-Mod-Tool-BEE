@@ -668,48 +668,6 @@ Vue.component('answer', {
     }
 })
 
-Vue.component('answer-feedback', {
-
-    props: ['pk'],
-
-    template: `
-    <li class="mx-auto bg-gray-100 p-4">
-
-        <h1 class="font-bold">ANSWER FEEDBACK PK {{this.pk}}</h1><br>
-        
-        <label for="candidate">Candidate:</label><br>
-        <input @input="onInput($event)" :value="candidate" name="candidate" type="number"><br>
-
-        <label for="answer_feedback">Answer Feedback:</label><br>
-        <textarea @input="onInput($event)" :value="answerFeedback" name="answer_feedback" rows="4" cols="50"></textarea><br>
-
-        <button class="bg-red-500 text-white p-2 my-2 rounded hover:bg-red-600" v-on:click="$emit('deleteFeedback', pk)">Delete Feedback</button>
-    </li>
-    `,
-
-    methods: {
-        onInput: function(evt) {
-
-            let value = evt.target.value;
-            if(shouldBeSavedAsNumber(value)) {
-                value = Number(value);
-            }
-
-            Vue.prototype.$TCT.answer_feedback[this.pk].fields[evt.target.name] = value;
-        }
-    },
-
-    computed: {
-        candidate: function () {
-          return Vue.prototype.$TCT.answer_feedback[this.pk].fields.candidate;
-        },
-
-        answerFeedback: function () {
-            return Vue.prototype.$TCT.answer_feedback[this.pk].fields.answer_feedback;
-        },
-    }
-})
-
 // Feedback Card Component
 Vue.component('answer-feedback-card', {
     props: ['pk'],
