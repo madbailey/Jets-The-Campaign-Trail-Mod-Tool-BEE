@@ -1117,6 +1117,32 @@ Vue.component('state-effect-presets', {
             this.$emit('applyValue', value);
         }
     },
+    
+    template: `
+    <div>
+        <button @click="togglePresets" class="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600 flex items-center">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+            </svg>
+            State Presets
+        </button>
+        
+        <div v-if="showPresets" class="mt-2 bg-gray-50 p-3 rounded shadow-sm">
+            <h4 class="font-medium text-sm mb-2">Select Region:</h4>
+            <div class="grid grid-cols-2 gap-1 mb-2">
+                <button @click="selectPreset('swing')" class="bg-purple-100 text-purple-800 px-2 py-1 text-xs rounded hover:bg-purple-200">Swing States</button>
+                <button @click="selectPreset('south')" class="bg-red-100 text-red-800 px-2 py-1 text-xs rounded hover:bg-red-200">South</button>
+                <button @click="selectPreset('midwest')" class="bg-yellow-100 text-yellow-800 px-2 py-1 text-xs rounded hover:bg-yellow-200">Midwest</button>
+                <button @click="selectPreset('northeast')" class="bg-blue-100 text-blue-800 px-2 py-1 text-xs rounded hover:bg-blue-200">Northeast</button>
+                <button @click="selectPreset('west')" class="bg-green-100 text-green-800 px-2 py-1 text-xs rounded hover:bg-green-200">West</button>
+                <button @click="selectPreset('blue')" class="bg-blue-300 text-blue-800 px-2 py-1 text-xs rounded hover:bg-blue-400">Blue States</button>
+                <button @click="selectPreset('red')" class="bg-red-300 text-red-800 px-2 py-1 text-xs rounded hover:bg-red-400">Red States</button>
+                <button @click="selectPreset('small')" class="bg-gray-200 text-gray-800 px-2 py-1 text-xs rounded hover:bg-gray-300">Small States</button>
+                <button @click="selectPreset('large')" class="bg-gray-300 text-gray-800 px-2 py-1 text-xs rounded hover:bg-gray-400">Large States</button>
+            </div>
+        </div>
+    </div>
+    `
 });
 
 Vue.component('integrated-state-effect-visualizer', {
