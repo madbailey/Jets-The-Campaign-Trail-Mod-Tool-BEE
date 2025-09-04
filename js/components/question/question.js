@@ -79,12 +79,20 @@ Vue.component('question', {
                             <div class="flex justify-between items-start">
                                 <div class="font-medium text-sm">#{{answer.pk}}</div>
                                 <div class="flex space-x-2 items-center">
-                                    <!-- Status badges -->
-                                    <div class="hidden md:flex space-x-1 select-none" @click.stop>
-                                        <span :class="badgeClass(getFeedbackForAnswer(answer.pk).length > 0, 'blue')" title="Feedback present">F {{ getFeedbackForAnswer(answer.pk).length }}</span>
-                                        <span :class="badgeClass(getGlobalScoresForAnswer(answer.pk).length > 0, 'purple')" title="Global scores present">G {{ getGlobalScoresForAnswer(answer.pk).length }}</span>
-                                        <span :class="badgeClass(getIssueScoresForAnswer(answer.pk).length > 0, 'green')" title="Issue scores present">I {{ getIssueScoresForAnswer(answer.pk).length }}</span>
-                                        <span :class="badgeClass(getStateScoresForAnswer(answer.pk).length > 0, 'orange')" title="State effects present">S {{ getStateScoresForAnswer(answer.pk).length }}</span>
+                                    <!-- Status chips -->
+                                    <div class="flex flex-wrap gap-1 select-none justify-end" @click.stop>
+                                        <span :class="chipClass(getFeedbackForAnswer(answer.pk).length, 'blue')" title="Feedback">
+                                            Feedback <span class="opacity-80">({{ getFeedbackForAnswer(answer.pk).length }})</span>
+                                        </span>
+                                        <span :class="chipClass(getGlobalScoresForAnswer(answer.pk).length, 'purple')" title="Global scores">
+                                            Global <span class="opacity-80">({{ getGlobalScoresForAnswer(answer.pk).length }})</span>
+                                        </span>
+                                        <span :class="chipClass(getIssueScoresForAnswer(answer.pk).length, 'green')" title="Issue scores">
+                                            Issues <span class="opacity-80">({{ getIssueScoresForAnswer(answer.pk).length }})</span>
+                                        </span>
+                                        <span :class="chipClass(getStateScoresForAnswer(answer.pk).length, 'orange')" title="State effects">
+                                            States <span class="opacity-80">({{ getStateScoresForAnswer(answer.pk).length }})</span>
+                                        </span>
                                     </div>
                                     <!-- Duplicate (clone) / Delete buttons -->
                                     <button @click.stop="cloneAnswer(answer.pk)" class="text-blue-500 hover:text-blue-700" title="Duplicate answer" aria-label="Duplicate answer">
@@ -103,13 +111,6 @@ Vue.component('question', {
                             </div>
                             <div class="mt-1 flex items-center justify-between">
                                 <div class="text-xs text-gray-600 truncate pr-2">{{answer.fields.description}}</div>
-                                <div class="md:hidden flex space-x-1 select-none" @click.stop>
-                                    <!-- Compact badges on small screens -->
-                                    <span :class="badgeClass(getFeedbackForAnswer(answer.pk).length > 0, 'blue')" title="Feedback">F</span>
-                                    <span :class="badgeClass(getGlobalScoresForAnswer(answer.pk).length > 0, 'purple')" title="Global">G</span>
-                                    <span :class="badgeClass(getIssueScoresForAnswer(answer.pk).length > 0, 'green')" title="Issues">I</span>
-                                    <span :class="badgeClass(getStateScoresForAnswer(answer.pk).length > 0, 'orange')" title="States">S</span>
-                                </div>
                             </div>
                         </li>
                     </ul>
@@ -240,16 +241,17 @@ Vue.component('question', {
     `,
 
     methods: {
-        badgeClass(filled, color) {
-            const common = 'px-1.5 py-0.5 rounded text-[10px] font-medium border';
-            const active = {
+        chipClass(count, color) {
+            const common = 'inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-medium border';
+            const activeMap = {
                 blue: 'bg-blue-100 text-blue-800 border-blue-300',
                 purple: 'bg-purple-100 text-purple-800 border-purple-300',
                 green: 'bg-green-100 text-green-800 border-green-300',
                 orange: 'bg-orange-100 text-orange-800 border-orange-300'
-            }[color] || 'bg-gray-100 text-gray-800 border-gray-300';
-            const inactive = 'bg-gray-100 text-gray-400 border-gray-200';
-            return filled ? `${common} ${active}` : `${common} ${inactive}`;
+            };
+            const inactive = 'bg-gray-100 text-gray-500 border-gray-200';
+            const active = activeMap[color] || 'bg-gray-100 text-gray-800 border-gray-300';
+            return (count > 0) ? `${common} ${active}` : `${common} ${inactive}`;
         },
         selectAnswer(pk) {
             this.activeAnswer = pk;
