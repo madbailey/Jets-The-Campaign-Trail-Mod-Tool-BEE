@@ -34,7 +34,7 @@ Vue.component('bulk', {
         <br>
         
         <ul>
-            <bulk-state v-for="state in states" :pk="state.pk" :key="state.pk" :stateObject="state"></bulk-state>
+            <bulk-state ref="bulkStates" v-for="state in states" :pk="state.pk" :key="state.pk" :stateObject="state"></bulk-state>
         </ul>
 
         <button class="bg-green-500 text-white p-2 my-2 rounded hover:bg-green-600" v-on:click="generate()">Generate State Scores</button>
@@ -60,7 +60,7 @@ Vue.component('bulk', {
         <br>
         
         <ul>
-            <bulk-issue v-for="stateIssueScore in stateIssueScores" :pk="stateIssueScore.pk" :key="stateIssueScore.pk" :issueScoreObject="stateIssueScore"></bulk-issue>
+            <bulk-issue ref="bulkIssues" v-for="stateIssueScore in stateIssueScores" :pk="stateIssueScore.pk" :key="stateIssueScore.pk" :issueScoreObject="stateIssueScore"></bulk-issue>
         </ul>
 
         <button class="bg-green-500 text-white p-2 my-2 rounded hover:bg-green-600" v-on:click="setIssueScores()">Set Issue Scores</button>
@@ -83,7 +83,7 @@ Vue.component('bulk', {
         <br>
         
         <ul>
-            <bulk-state-multiplier v-for="stateMultiplier in stateMultipliers" :pk="stateMultiplier.pk" :key="stateMultiplier.pk" :stateMultiplierObject="stateMultiplier"></bulk-state-multiplier>
+            <bulk-state-multiplier ref="bulkStateMultipliers" v-for="stateMultiplier in stateMultipliers" :pk="stateMultiplier.pk" :key="stateMultiplier.pk" :stateMultiplierObject="stateMultiplier"></bulk-state-multiplier>
         </ul>
 
         <button class="bg-green-500 text-white p-2 my-2 rounded hover:bg-green-600" v-on:click="setStateMultipliers()">Set State Multipliers</button>
@@ -119,16 +119,13 @@ Vue.component('bulk', {
         },
 
         generate: function() {
-            const stateScores = document.getElementsByClassName("bulkStateScore");
-            for(let i = 0; i < stateScores.length; i++) {
-                const score = stateScores[i];
-                const data = score.__vue__._data;
-
-                const pk = Number(score.__vue__._props.pk);
-                const amount = Number(data.amount);
-                const include = data.include;
-
-                if(include) {
+            const items = this.$refs.bulkStates || [];
+            for (let i = 0; i < items.length; i++) {
+                const comp = items[i];
+                const pk = Number(comp.pk);
+                const amount = Number(comp.amount);
+                const include = comp.include;
+                if (include) {
                     const newPk =  Vue.prototype.$TCT.getNewPk();
                     let x = {
                         "model": "campaign_trail.answer_score_state",
@@ -143,120 +140,83 @@ Vue.component('bulk', {
                     }
                     Vue.prototype.$TCT.answer_score_state[newPk] = x;
                 }
-                        
             }
 
             alert("Bulk generated state scores for answer with PK " + this.answerPk + " (do not submit again)");
         },
 
         setIssueScores: function() {
-            const issueScores = document.getElementsByClassName("bulkStateIssue");
-            for(let i = 0; i < issueScores.length; i++) {
-                const score = issueScores[i];
-                const data = score.__vue__._data;
-
-                const pk = Number(score.__vue__._props.pk);
-                const include = data.include;
-
-                if(include) {
+            const items = this.$refs.bulkIssues || [];
+            for (let i = 0; i < items.length; i++) {
+                const comp = items[i];
+                const pk = Number(comp.pk);
+                const include = comp.include;
+                if (include) {
                     Vue.prototype.$TCT.state_issue_scores[pk].fields.state_issue_score = Number(this.stateIssueScore);
                     Vue.prototype.$TCT.state_issue_scores[pk].fields.weight = Number(this.issueWeight);
                 }
-                        
             }
 
             alert("Set issue scores!")
         },
 
         setStateMultipliers: function() {
-            const stateMultipliers = document.getElementsByClassName("bulkStateMultiplier");
-            for(let i = 0; i < stateMultipliers.length; i++) {
-                const score = stateMultipliers[i];
-                const data = score.__vue__._data;
-
-                const pk = Number(score.__vue__._props.pk);
-                const include = data.include;
-
-                if(include) {
+            const items = this.$refs.bulkStateMultipliers || [];
+            for (let i = 0; i < items.length; i++) {
+                const comp = items[i];
+                const pk = Number(comp.pk);
+                const include = comp.include;
+                if (include) {
                     Vue.prototype.$TCT.candidate_state_multiplier[pk].fields.state_multiplier = Number(this.stateMultiplier);
                 }
-                        
             }
 
             alert("Set state multipliers!")
         },
 
         multiplyStateMultipliers: function() {
-            const stateMultipliers = document.getElementsByClassName("bulkStateMultiplier");
-            for(let i = 0; i < stateMultipliers.length; i++) {
-                const score = stateMultipliers[i];
-                const data = score.__vue__._data;
-
-                const pk = Number(score.__vue__._props.pk);
-                const include = data.include;
-
-                if(include) {
+            const items = this.$refs.bulkStateMultipliers || [];
+            for (let i = 0; i < items.length; i++) {
+                const comp = items[i];
+                const pk = Number(comp.pk);
+                const include = comp.include;
+                if (include) {
                     Vue.prototype.$TCT.candidate_state_multiplier[pk].fields.state_multiplier *= Number(this.multiplier);
                 }
-                        
             }
 
             alert("Multiplied state multipliers!")
         },
 
         checkAllStates: function() {
-            const issueScores = document.getElementsByClassName("bulkStateMultiplier");
-            for(let i = 0; i < issueScores.length; i++) {
-                const score = issueScores[i];
-                const data = score.__vue__._data;
-                data.include = true;
-            }
+            const items = this.$refs.bulkStateMultipliers || [];
+            for (let i = 0; i < items.length; i++) { items[i].include = true; }
         },
 
         uncheckAllStates: function() {
-            const issueScores = document.getElementsByClassName("bulkStateMultiplier");
-            for(let i = 0; i < issueScores.length; i++) {
-                const score = issueScores[i];
-                const data = score.__vue__._data;
-                data.include = false;
-            }
+            const items = this.$refs.bulkStateMultipliers || [];
+            for (let i = 0; i < items.length; i++) { items[i].include = false; }
         },
 
         checkAllIssues: function() {
-            const issueScores = document.getElementsByClassName("bulkStateIssue");
-            for(let i = 0; i < issueScores.length; i++) {
-                const score = issueScores[i];
-                const data = score.__vue__._data;
-                data.include = true;
-            }
+            const items = this.$refs.bulkIssues || [];
+            for (let i = 0; i < items.length; i++) { items[i].include = true; }
         },
 
         uncheckAllIssues: function() {
-            const issueScores = document.getElementsByClassName("bulkStateIssue");
-            for(let i = 0; i < issueScores.length; i++) {
-                const score = issueScores[i];
-                const data = score.__vue__._data;
-                data.include = false;
-            }
+            const items = this.$refs.bulkIssues || [];
+            for (let i = 0; i < items.length; i++) { items[i].include = false; }
         },
 
         checkAll: function() {
-            const stateScores = document.getElementsByClassName("bulkStateScore");
-            for(let i = 0; i < stateScores.length; i++) {
-                const score = stateScores[i];
-                const data = score.__vue__._data;
-                data.include = true;
-            }
+            const items = this.$refs.bulkStates || [];
+            for (let i = 0; i < items.length; i++) { items[i].include = true; }
         },
 
         
         invertAll: function() {
-            const stateScores = document.getElementsByClassName("bulkStateScore");
-            for(let i = 0; i < stateScores.length; i++) {
-                const score = stateScores[i];
-                const data = score.__vue__._data;
-                data.amount *= -1;
-            }
+            const items = this.$refs.bulkStates || [];
+            for (let i = 0; i < items.length; i++) { items[i].amount *= -1; }
         }
     },
 
