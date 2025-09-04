@@ -40,7 +40,8 @@ async function loadData(dataName, isFirstLoad) {
     let raw;
 
     if(!isFirstLoad || !autosaveEnabled || !autosave) {
-        let f = await fetch(`./public/${dataName}`, {mode: "no-cors"});
+        // Load template from same-origin so the response body is readable
+        const f = await fetch(`./public/${dataName}`);
         raw = await f.text();
     } else {
         raw = autosave;
