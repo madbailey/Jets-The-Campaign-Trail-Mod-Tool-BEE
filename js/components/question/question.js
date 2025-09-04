@@ -82,15 +82,32 @@ Vue.component('question', {
                                     <!-- Status chips -->
                                     <div class="flex flex-wrap gap-1 select-none justify-end" @click.stop>
                                         <span :class="chipClass(getFeedbackForAnswer(answer.pk).length, 'blue')" title="Feedback">
+                                            <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="h-3.5 w-3.5 mr-1" fill="none" stroke="currentColor">
+                                                <rect x="3" y="4" width="18" height="12" rx="2" ry="2" stroke-width="2"/>
+                                                <path d="M8 16 L8 20 L12 16" stroke-width="2"/>
+                                            </svg>
                                             Feedback <span class="opacity-80">({{ getFeedbackForAnswer(answer.pk).length }})</span>
                                         </span>
                                         <span :class="chipClass(getGlobalScoresForAnswer(answer.pk).length, 'purple')" title="Global scores">
+                                            <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="h-3.5 w-3.5 mr-1" fill="none" stroke="currentColor">
+                                                <circle cx="12" cy="12" r="9" stroke-width="2"/>
+                                                <path d="M12 3 v18" stroke-width="2"/>
+                                                <path d="M3 12 h18" stroke-width="2"/>
+                                            </svg>
                                             Global <span class="opacity-80">({{ getGlobalScoresForAnswer(answer.pk).length }})</span>
                                         </span>
                                         <span :class="chipClass(getIssueScoresForAnswer(answer.pk).length, 'green')" title="Issue scores">
+                                            <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="h-3.5 w-3.5 mr-1" fill="none" stroke="currentColor">
+                                                <path d="M4 7 h12" stroke-width="2" stroke-linecap="round"/>
+                                                <path d="M4 12 h12" stroke-width="2" stroke-linecap="round"/>
+                                                <path d="M4 17 h12" stroke-width="2" stroke-linecap="round"/>
+                                            </svg>
                                             Issues <span class="opacity-80">({{ getIssueScoresForAnswer(answer.pk).length }})</span>
                                         </span>
                                         <span :class="chipClass(getStateScoresForAnswer(answer.pk).length, 'orange')" title="State effects">
+                                            <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="h-3.5 w-3.5 mr-1" fill="none" stroke="currentColor">
+                                                <path d="M9 20l-5-2V6l5 2 6-2 5 2v12l-5-2-6 2z" stroke-width="2" stroke-linejoin="round"/>
+                                            </svg>
                                             States <span class="opacity-80">({{ getStateScoresForAnswer(answer.pk).length }})</span>
                                         </span>
                                     </div>
