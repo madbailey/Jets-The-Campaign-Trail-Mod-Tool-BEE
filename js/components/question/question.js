@@ -78,20 +78,39 @@ Vue.component('question', {
                             @click="selectAnswer(answer.pk)">
                             <div class="flex justify-between items-start">
                                 <div class="font-medium text-sm">#{{answer.pk}}</div>
-                                <div class="flex space-x-1">
-                                    <button @click.stop="cloneAnswer(answer.pk)" class="text-blue-500 hover:text-blue-700">
+                                <div class="flex space-x-2 items-center">
+                                    <!-- Status badges -->
+                                    <div class="hidden md:flex space-x-1 select-none" @click.stop>
+                                        <span :class="badgeClass(getFeedbackForAnswer(answer.pk).length > 0, 'blue')" title="Feedback present">F {{ getFeedbackForAnswer(answer.pk).length }}</span>
+                                        <span :class="badgeClass(getGlobalScoresForAnswer(answer.pk).length > 0, 'purple')" title="Global scores present">G {{ getGlobalScoresForAnswer(answer.pk).length }}</span>
+                                        <span :class="badgeClass(getIssueScoresForAnswer(answer.pk).length > 0, 'green')" title="Issue scores present">I {{ getIssueScoresForAnswer(answer.pk).length }}</span>
+                                        <span :class="badgeClass(getStateScoresForAnswer(answer.pk).length > 0, 'orange')" title="State effects present">S {{ getStateScoresForAnswer(answer.pk).length }}</span>
+                                    </div>
+                                    <!-- Duplicate (clone) / Delete buttons -->
+                                    <button @click.stop="cloneAnswer(answer.pk)" class="text-blue-500 hover:text-blue-700" title="Duplicate answer" aria-label="Duplicate answer">
                                         <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16l4-4m0 0l4-4m-4 4H4" />
+                                            <!-- document-duplicate style icon -->
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7a2 2 0 012-2h6a2 2 0 012 2v9a2 2 0 01-2 2h-6a2 2 0 01-2-2V7z" />
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 17a2 2 0 01-2-2V6a2 2 0 012-2h6" />
                                         </svg>
                                     </button>
-                                    <button @click.stop="deleteAnswer(answer.pk)" class="text-red-500 hover:text-red-700">
+                                    <button @click.stop="deleteAnswer(answer.pk)" class="text-red-500 hover:text-red-700" title="Delete answer" aria-label="Delete answer">
                                         <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                                         </svg>
                                     </button>
                                 </div>
                             </div>
-                            <div class="text-xs text-gray-600 mt-1">{{answer.fields.description}}</div>
+                            <div class="mt-1 flex items-center justify-between">
+                                <div class="text-xs text-gray-600 truncate pr-2">{{answer.fields.description}}</div>
+                                <div class="md:hidden flex space-x-1 select-none" @click.stop>
+                                    <!-- Compact badges on small screens -->
+                                    <span :class="badgeClass(getFeedbackForAnswer(answer.pk).length > 0, 'blue')" title="Feedback">F</span>
+                                    <span :class="badgeClass(getGlobalScoresForAnswer(answer.pk).length > 0, 'purple')" title="Global">G</span>
+                                    <span :class="badgeClass(getIssueScoresForAnswer(answer.pk).length > 0, 'green')" title="Issues">I</span>
+                                    <span :class="badgeClass(getStateScoresForAnswer(answer.pk).length > 0, 'orange')" title="States">S</span>
+                                </div>
+                            </div>
                         </li>
                     </ul>
                 </div>
@@ -221,6 +240,17 @@ Vue.component('question', {
     `,
 
     methods: {
+        badgeClass(filled, color) {
+            const common = 'px-1.5 py-0.5 rounded text-[10px] font-medium border';
+            const active = {
+                blue: 'bg-blue-100 text-blue-800 border-blue-300',
+                purple: 'bg-purple-100 text-purple-800 border-purple-300',
+                green: 'bg-green-100 text-green-800 border-green-300',
+                orange: 'bg-orange-100 text-orange-800 border-orange-300'
+            }[color] || 'bg-gray-100 text-gray-800 border-gray-300';
+            const inactive = 'bg-gray-100 text-gray-400 border-gray-200';
+            return filled ? `${common} ${active}` : `${common} ${inactive}`;
+        },
         selectAnswer(pk) {
             this.activeAnswer = pk;
         },
@@ -434,4 +464,3 @@ Vue.component('question', {
         }
     }
 });
-
